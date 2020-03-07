@@ -128,15 +128,17 @@ Timer.DelayAction(transitionDuration,
 
 - `timer.Pause()`
 - `timer.Resume()`
+- `timer.Cancel()`
 - `timer.Restart()`
+- `timer.GetTimeElapsed()`
 - `timer.GetTimeRemaining()`
 - `timer.GetRatioComplete()`
 - `timer.isDone`
-- `Timer.CancelAllTimers()`
-- `Timer.PauseAllTimers()`
-- `Timer.ResumeAllTimers()`
+- `Timer.CancelAllRegisteredTimers()`
+- `Timer.PauseAllRegisteredTimers()`
+- `Timer.ResumeAllRegisteredTimers()`
 
-* Make a timer not effect by `Timer.XXXAllTimers()` function by call `Timer.PersistenceXXX()` function.
+* Make a timer not effect by `Timer.XXXAllRegisteredTimers()` function by call `Timer.PersistenceXXX()` function.
 ```c#
 Timer timer;
 
