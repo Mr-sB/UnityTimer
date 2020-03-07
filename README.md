@@ -128,6 +128,7 @@ Timer.DelayAction(transitionDuration,
 
 - `timer.Pause()`
 - `timer.Resume()`
+- `timer.Restart()`
 - `timer.GetTimeRemaining()`
 - `timer.GetRatioComplete()`
 - `timer.isDone`
