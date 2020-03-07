@@ -612,8 +612,6 @@ public class Timer
         private readonly List<Timer> _timersToAdd = new List<Timer>();
         private readonly List<Timer> _persistenceTimersToAdd = new List<Timer>();
         
-        // private readonly List<int> _timersToDelete = new List<int>();
-
         public void CancelAllTimers()
         {
             foreach (Timer timer in _timers)
