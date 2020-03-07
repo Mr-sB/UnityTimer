@@ -626,11 +626,13 @@ public class Timer
             foreach (Timer timer in _timers)
             {
                 timer.Cancel();
+                timer._isInManager = false;
             }
             
             foreach (Timer timer in _timersToAdd)
             {
                 timer.Cancel();
+                timer._isInManager = false;
             }
 
             _timers.Clear();
