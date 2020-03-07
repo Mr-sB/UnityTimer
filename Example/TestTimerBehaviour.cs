@@ -91,6 +91,7 @@ namespace UnityTimer.Examples
         public void RestartTimer()
         {
             Timer.Restart(_testTimer);
+            CancelTimerButton.interactable = true;
         }
 
         private void Update()
