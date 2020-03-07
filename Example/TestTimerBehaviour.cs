@@ -87,6 +87,11 @@ namespace UnityTimer.Examples
         {
             Timer.Resume(_testTimer);
         }
+        
+        public void RestartTimer()
+        {
+            Timer.Restart(_testTimer);
+        }
 
         private void Update()
         {

@@ -77,7 +77,7 @@ public class Timer
         {
             Init();
         }
-        Timer timer = new Timer(duration, onComplete, onUpdate, false, useRealTime, autoDestroyOwner);
+        Timer timer = new Timer(false, duration, onComplete, onUpdate, false, useRealTime, autoDestroyOwner);
         _manager.RegisterTimer(timer);
         return timer;
     }
@@ -109,7 +109,7 @@ public class Timer
             }
         }
         
-        timer = new Timer(100000, onComplete, OnUpdateAction, false, true, autoDestroyOwner);
+        timer = new Timer(false, 100000, onComplete, OnUpdateAction, false, true, autoDestroyOwner);
         _manager.RegisterTimer(timer);
         return timer;
     }
@@ -125,7 +125,7 @@ public class Timer
         }
         if (executeOnStart && onComplete != null)
             onComplete();
-        Timer timer = new Timer(interval, onComplete, onUpdate, true, useRealTime, autoDestroyOwner);
+        Timer timer = new Timer(false, interval, onComplete, onUpdate, true, useRealTime, autoDestroyOwner);
         _manager.RegisterTimer(timer);
         return timer;
     }
@@ -171,7 +171,7 @@ public class Timer
 
         if (executeOnStart)
             OnCompleteAction();
-        timerAction = new Timer(interval, OnCompleteAction, onUpdate, true, useRealTime, autoDestroyOwner);
+        timerAction = new Timer(false, interval, OnCompleteAction, onUpdate, true, useRealTime, autoDestroyOwner);
         _manager.RegisterTimer(timerAction);
         return timerAction;
     }
@@ -185,7 +185,7 @@ public class Timer
         {
             Init();
         }
-        Timer timer = new Timer(duration, onComplete, onUpdate, false, useRealTime, autoDestroyOwner);
+        Timer timer = new Timer(true, duration, onComplete, onUpdate, false, useRealTime, autoDestroyOwner);
         _manager.RegisterPersistenceTimer(timer);
         return timer;
     }
@@ -217,7 +217,7 @@ public class Timer
             }
         }
         
-        timer = new Timer(100000, onComplete, OnUpdateAction, false, true, autoDestroyOwner);
+        timer = new Timer(true, 100000, onComplete, OnUpdateAction, false, true, autoDestroyOwner);
         _manager.RegisterPersistenceTimer(timer);
         return timer;
     }
@@ -233,7 +233,7 @@ public class Timer
         }
         if (executeOnStart && onComplete != null)
             onComplete();
-        Timer timer = new Timer(interval, onComplete, onUpdate, true, useRealTime, autoDestroyOwner);
+        Timer timer = new Timer(true, interval, onComplete, onUpdate, true, useRealTime, autoDestroyOwner);
         _manager.RegisterPersistenceTimer(timer);
         return timer;
     }
@@ -279,12 +279,25 @@ public class Timer
 
         if (executeOnStart)
             OnCompleteAction();
-        timerAction = new Timer(interval, OnCompleteAction, onUpdate, true, useRealTime, autoDestroyOwner);
+        timerAction = new Timer(true, interval, OnCompleteAction, onUpdate, true, useRealTime, autoDestroyOwner);
         _manager.RegisterPersistenceTimer(timerAction);
         return timerAction;
     }
     #endregion
 
+    /// <summary>
+    /// Restart a timer. The main benefit of this over the method on the instance is that you will not get
+    /// a <see cref="NullReferenceException"/> if the timer is null.
+    /// </summary>
+    /// <param name="timer">The timer to cancel.</param>
+    public static void Restart(Timer timer)
+    {
+        if (timer != null)
+        {
+            timer.Restart();
+        }
+    }
+    
     /// <summary>
     /// Cancels a timer. The main benefit of this over the method on the instance is that you will not get
     /// a <see cref="NullReferenceException"/> if the timer is null.
@@ -360,7 +373,26 @@ public class Timer
     #endregion
 
     #region Public Methods
-
+    
+    /// <summary>
+    /// Restart a timer that is in-progress or done. The timer's on completion callback will not be called.
+    /// </summary>
+    public void Restart()
+    {
+        isCompleted = false;
+        _startTime = GetWorldTime();
+        _lastUpdateTime = _startTime;
+        _timeElapsedBeforeCancel = null;
+        _timeElapsedBeforePause = null;
+        if (!_isInManager)
+        {
+            if(!_isPersistence)
+                _manager.RegisterTimer(this);
+            else
+                _manager.RegisterPersistenceTimer(this);
+        }
+    }
+    
     /// <summary>
     /// Stop a timer that is in-progress or paused. The timer's on completion callback will not be called.
     /// </summary>
@@ -468,6 +500,11 @@ public class Timer
         get { return this._hasAutoDestroyOwner && this._autoDestroyOwner == null; }
     }
 
+    // whether the timer is persistence
+    private bool _isPersistence;
+    // whether the timer is in TimeManager
+    private bool _isInManager;
+    
     private readonly Action _onComplete;
     private readonly Action<float> _onUpdate;
     private float _startTime;
@@ -490,9 +527,10 @@ public class Timer
 
     #region Private Constructor (use static Register method to create new timer)
 
-    private Timer(float duration, Action onComplete, Action<float> onUpdate,
+    private Timer(bool isPersistence, float duration, Action onComplete, Action<float> onUpdate,
         bool isLooped, bool usesRealTime, MonoBehaviour autoDestroyOwner)
     {
+        this._isPersistence = isPersistence;
         this.duration = duration;
         this._onComplete = onComplete;
         this._onUpdate = onUpdate;
@@ -671,6 +709,7 @@ public class Timer
         //Timer
         public void RegisterTimer(Timer timer)
         {
+            timer._isInManager = true;
             this._timersToAdd.Add(timer);
         }
         
@@ -684,9 +723,11 @@ public class Timer
 
             for (int i = 0, count = _timers.Count; i < count; i++)
             {
-                _timers[i].Update();
-                if (_timers[i].isDone)
+                var timer = _timers[i];
+                timer.Update();
+                if (timer.isDone)
                 {
+                    timer._isInManager = false;
                     _timersToDelete.Add(i);
                 }
             }
@@ -704,6 +745,7 @@ public class Timer
         //PersistenceTimer
         public void RegisterPersistenceTimer(Timer timer)
         {
+            timer._isInManager = true;
             _persistenceTimersToAdd.Add(timer);
         }
         
@@ -717,9 +759,11 @@ public class Timer
 
             for (int i = 0, count = _persistenceTimers.Count; i < count; i++)
             {
-                _persistenceTimers[i].Update();
-                if (_persistenceTimers[i].isDone)
+                var timer =_persistenceTimers[i];
+                timer.Update();
+                if (timer.isDone)
                 {
+                    timer._isInManager = false;
                     _timersToDelete.Add(i);
                 }
             }
