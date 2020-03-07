@@ -465,6 +465,8 @@ public class Timer
     private readonly MonoBehaviour _autoDestroyOwner;
     private readonly bool _hasAutoDestroyOwner;
 
+    private readonly LinkedListNode<Timer> _linkedListNode;
+
     #endregion
 
     #region Private Constructor (use static Register method to create new timer)
@@ -494,6 +496,8 @@ public class Timer
 
         this._startTime = this.GetWorldTime();
         this._lastUpdateTime = this._startTime;
+        
+        _linkedListNode = new LinkedListNode<Timer>(this);
         
         _manager.Register(this);
     }
@@ -601,14 +605,14 @@ public class Timer
     private class TimerManager : MonoBehaviour
     {
         //不会被Timer.xxAll的方法影响
-        private readonly List<Timer> _persistenceTimers = new List<Timer>();
-        private readonly List<Timer> _timers = new List<Timer>();
+        private readonly LinkedList<Timer> _persistenceTimers = new LinkedList<Timer>();
+        private readonly LinkedList<Timer> _timers = new LinkedList<Timer>();
 
         // buffer adding timers so we don't edit a collection during iteration
         private readonly List<Timer> _timersToAdd = new List<Timer>();
         private readonly List<Timer> _persistenceTimersToAdd = new List<Timer>();
         
-        private readonly List<int> _timersToDelete = new List<int>();
+        // private readonly List<int> _timersToDelete = new List<int>();
 
         public void CancelAllTimers()
         {
@@ -673,60 +677,58 @@ public class Timer
         
         private void UpdateTimers()
         {
-            if (_timersToAdd.Count > 0)
+            int toAddCount = _timersToAdd.Count;
+            if (toAddCount > 0)
             {
-                _timers.AddRange(_timersToAdd);
+                for (int i = 0; i < toAddCount; i++)
+                    _timers.AddLast(_timersToAdd[i]._linkedListNode);
                 _timersToAdd.Clear();
             }
 
-            for (int i = 0, count = _timers.Count; i < count; i++)
+            var node = _timers.First;
+            while (node != null)
             {
-                var timer = _timers[i];
+                var timer = node.Value;
                 timer.Update();
                 if (timer.isDone)
                 {
                     timer._isInManager = false;
-                    _timersToDelete.Add(i);
+                    var toRemoveNode = node;
+                    node = node.Next;
+                    //remove
+                    _timers.Remove(toRemoveNode);
                 }
-            }
-
-            if (_timersToDelete.Count > 0)
-            {
-                for (int i = _timersToDelete.Count - 1; i >= 0; i--)
-                {
-                    _timers.RemoveAt(_timersToDelete[i]);
-                }
-                _timersToDelete.Clear();
+                else
+                    node = node.Next;
             }
         }
         
         //PersistenceTimer
         private void UpdatePersistenceTimers()
         {
-            if (_persistenceTimersToAdd.Count > 0)
+            int toAddCount = _persistenceTimersToAdd.Count;
+            if (toAddCount > 0)
             {
-                _persistenceTimers.AddRange(_persistenceTimersToAdd);
+                for (int i = 0; i < toAddCount; i++)
+                    _persistenceTimers.AddLast(_persistenceTimersToAdd[i]._linkedListNode);
                 _persistenceTimersToAdd.Clear();
             }
 
-            for (int i = 0, count = _persistenceTimers.Count; i < count; i++)
+            var node = _persistenceTimers.First;
+            while (node != null)
             {
-                var timer =_persistenceTimers[i];
+                var timer = node.Value;
                 timer.Update();
                 if (timer.isDone)
                 {
                     timer._isInManager = false;
-                    _timersToDelete.Add(i);
+                    var toRemoveNode = node;
+                    node = node.Next;
+                    //remove
+                    _persistenceTimers.Remove(toRemoveNode);
                 }
-            }
-
-            if (_timersToDelete.Count > 0)
-            {
-                for (int i = _timersToDelete.Count - 1; i >= 0; i--)
-                {
-                    _persistenceTimers.RemoveAt(_timersToDelete[i]);
-                }
-                _timersToDelete.Clear();
+                else
+                    node = node.Next;
             }
         }
     }
