@@ -72,24 +72,12 @@ public class Timer
     public static Timer DelayAction(float duration, Action onComplete, Action<float> onUpdate = null, bool useRealTime = false, MonoBehaviour autoDestroyOwner = null)
     {
         if (onComplete == null && onUpdate == null) return null;
-        // create a manager object to update all the timers if one does not already exist.
-        if (_manager == null)
-        {
-            Init();
-        }
-        Timer timer = new Timer(false, duration, onComplete, onUpdate, false, useRealTime, autoDestroyOwner);
-        _manager.RegisterTimer(timer);
-        return timer;
+        return new Timer(false, duration, onComplete, onUpdate, false, useRealTime, autoDestroyOwner);
     }
     
     public static Timer DelayFrameAction(int frame, Action onComplete, Action<float> onUpdate = null, MonoBehaviour autoDestroyOwner = null)
     {
         if (onComplete == null && onUpdate == null) return null;
-        // create a manager object to update all the timers if one does not already exist.
-        if (_manager == null)
-        {
-            Init();
-        }
 
         int frameCount = 0;
         Timer timer = null;
@@ -110,7 +98,6 @@ public class Timer
         }
         
         timer = new Timer(false, 100000, onComplete, OnUpdateAction, false, true, autoDestroyOwner);
-        _manager.RegisterTimer(timer);
         return timer;
     }
 
@@ -118,27 +105,15 @@ public class Timer
         bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null)
     {
         if (onComplete == null && onUpdate == null) return null;
-        // create a manager object to update all the timers if one does not already exist.
-        if (_manager == null)
-        {
-            Init();
-        }
         if (executeOnStart && onComplete != null)
             onComplete();
-        Timer timer = new Timer(false, interval, onComplete, onUpdate, true, useRealTime, autoDestroyOwner);
-        _manager.RegisterTimer(timer);
-        return timer;
+        return new Timer(false, interval, onComplete, onUpdate, true, useRealTime, autoDestroyOwner);
     }
     
     public static Timer LoopAction(float interval, int count, Action onComplete, Action<float> onUpdate = null, Action onFinished = null,
         bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null)
     {
         if (onComplete == null && onUpdate == null && onFinished == null) return null;
-        // create a manager object to update all the timers if one does not already exist.
-        if (_manager == null)
-        {
-            Init();
-        }
         int timer = 0;
         Timer timerAction = null;
         bool isFinished = false;
@@ -172,7 +147,6 @@ public class Timer
         if (executeOnStart)
             OnCompleteAction();
         timerAction = new Timer(false, interval, OnCompleteAction, onUpdate, true, useRealTime, autoDestroyOwner);
-        _manager.RegisterTimer(timerAction);
         return timerAction;
     }
 
@@ -180,24 +154,12 @@ public class Timer
     public static Timer PersistenceDelayAction(float duration, Action onComplete, Action<float> onUpdate = null, bool useRealTime = false, MonoBehaviour autoDestroyOwner = null)
     {
         if (onComplete == null && onUpdate == null) return null;
-        // create a manager object to update all the timers if one does not already exist.
-        if (_manager == null)
-        {
-            Init();
-        }
-        Timer timer = new Timer(true, duration, onComplete, onUpdate, false, useRealTime, autoDestroyOwner);
-        _manager.RegisterPersistenceTimer(timer);
-        return timer;
+        return new Timer(true, duration, onComplete, onUpdate, false, useRealTime, autoDestroyOwner);
     }
     
     public static Timer PersistenceDelayFrameAction(int frame, Action onComplete, Action<float> onUpdate = null, MonoBehaviour autoDestroyOwner = null)
     {
         if (onComplete == null && onUpdate == null) return null;
-        // create a manager object to update all the timers if one does not already exist.
-        if (_manager == null)
-        {
-            Init();
-        }
 
         int frameCount = 0;
         Timer timer = null;
@@ -218,7 +180,6 @@ public class Timer
         }
         
         timer = new Timer(true, 100000, onComplete, OnUpdateAction, false, true, autoDestroyOwner);
-        _manager.RegisterPersistenceTimer(timer);
         return timer;
     }
 
@@ -226,27 +187,15 @@ public class Timer
         bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null)
     {
         if (onComplete == null && onUpdate == null) return null;
-        // create a manager object to update all the timers if one does not already exist.
-        if (_manager == null)
-        {
-            Init();
-        }
         if (executeOnStart && onComplete != null)
             onComplete();
-        Timer timer = new Timer(true, interval, onComplete, onUpdate, true, useRealTime, autoDestroyOwner);
-        _manager.RegisterPersistenceTimer(timer);
-        return timer;
+        return new Timer(true, interval, onComplete, onUpdate, true, useRealTime, autoDestroyOwner);
     }
     
     public static Timer PersistenceLoopAction(float interval, int count, Action onComplete, Action<float> onUpdate = null, Action onFinished = null,
         bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null)
     {
         if (onComplete == null && onUpdate == null && onFinished == null) return null;
-        // create a manager object to update all the timers if one does not already exist.
-        if (_manager == null)
-        {
-            Init();
-        }
         int timer = 0;
         Timer timerAction = null;
         bool isFinished = false;
@@ -280,7 +229,6 @@ public class Timer
         if (executeOnStart)
             OnCompleteAction();
         timerAction = new Timer(true, interval, OnCompleteAction, onUpdate, true, useRealTime, autoDestroyOwner);
-        _manager.RegisterPersistenceTimer(timerAction);
         return timerAction;
     }
     #endregion
@@ -384,13 +332,7 @@ public class Timer
         _lastUpdateTime = _startTime;
         _timeElapsedBeforeCancel = null;
         _timeElapsedBeforePause = null;
-        if (!_isInManager)
-        {
-            if(!_isPersistence)
-                _manager.RegisterTimer(this);
-            else
-                _manager.RegisterPersistenceTimer(this);
-        }
+        _manager.Register(this);
     }
     
     /// <summary>
@@ -527,6 +469,15 @@ public class Timer
 
     #region Private Constructor (use static Register method to create new timer)
 
+    static Timer()
+    {
+        // create a manager object to update all the timers if one does not already exist.
+        if (_manager == null)
+        {
+            Init();
+        }
+    }
+    
     private Timer(bool isPersistence, float duration, Action onComplete, Action<float> onUpdate,
         bool isLooped, bool usesRealTime, MonoBehaviour autoDestroyOwner)
     {
@@ -543,6 +494,8 @@ public class Timer
 
         this._startTime = this.GetWorldTime();
         this._lastUpdateTime = this._startTime;
+        
+        _manager.Register(this);
     }
 
     #endregion
@@ -647,7 +600,7 @@ public class Timer
     /// </summary>
     private class TimerManager : MonoBehaviour
     {
-        //不会被xxAll的方法影响
+        //不会被Timer.xxAll的方法影响
         private readonly List<Timer> _persistenceTimers = new List<Timer>();
         private readonly List<Timer> _timers = new List<Timer>();
 
@@ -707,10 +660,15 @@ public class Timer
         }
         
         //Timer
-        public void RegisterTimer(Timer timer)
+        public void Register(Timer timer)
         {
+            //no need to add
+            if (timer._isInManager) return;
             timer._isInManager = true;
-            this._timersToAdd.Add(timer);
+            if(!timer._isPersistence)
+                _timersToAdd.Add(timer);
+            else
+                _persistenceTimersToAdd.Add(timer);
         }
         
         private void UpdateTimers()
@@ -743,12 +701,6 @@ public class Timer
         }
         
         //PersistenceTimer
-        public void RegisterPersistenceTimer(Timer timer)
-        {
-            timer._isInManager = true;
-            _persistenceTimersToAdd.Add(timer);
-        }
-        
         private void UpdatePersistenceTimers()
         {
             if (_persistenceTimersToAdd.Count > 0)
