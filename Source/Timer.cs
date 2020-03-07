@@ -332,6 +332,7 @@ public class Timer
         _lastUpdateTime = _startTime;
         _timeElapsedBeforeCancel = null;
         _timeElapsedBeforePause = null;
+        _timeElapsedBeforeAutoDestroy = null;
         _manager.Register(this);
     }
     
@@ -387,13 +388,14 @@ public class Timer
     /// starting and when it was cancelled/paused.</returns>
     public float GetTimeElapsed()
     {
-        if (this.isCompleted || this.GetWorldTime() >= this.GetFireTime())
+        if (this.isCompleted)
         {
             return this.duration;
         }
 
         return this._timeElapsedBeforeCancel ??
                this._timeElapsedBeforePause ??
+               this._timeElapsedBeforeAutoDestroy ??
                this.GetWorldTime() - this._startTime;
     }
 
@@ -439,11 +441,17 @@ public class Timer
 
     private bool isOwnerDestroyed
     {
-        get { return this._hasAutoDestroyOwner && this._autoDestroyOwner == null; }
+        get
+        {
+            if (!_hasAutoDestroyOwner || _autoDestroyOwner) return false;
+            if (!_timeElapsedBeforeAutoDestroy.HasValue)
+                _timeElapsedBeforeAutoDestroy = GetTimeElapsed();
+            return true;
+        }
     }
 
     // whether the timer is persistence
-    private bool _isPersistence;
+    private readonly bool _isPersistence;
     // whether the timer is in TimeManager
     private bool _isInManager;
     
@@ -455,9 +463,10 @@ public class Timer
     // for pausing, we push the start time forward by the amount of time that has passed.
     // this will mess with the amount of time that elapsed when we're cancelled or paused if we just
     // check the start time versus the current world time, so we need to cache the time that was elapsed
-    // before we paused/cancelled
+    // before we paused/cancelled/autoDestroy
     private float? _timeElapsedBeforeCancel;
     private float? _timeElapsedBeforePause;
+    private float? _timeElapsedBeforeAutoDestroy;
 
     // after the auto destroy owner is destroyed, the timer will expire
     // this way you don't run into any annoying bugs with timers running and accessing objects
