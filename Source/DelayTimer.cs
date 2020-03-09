@@ -21,9 +21,4 @@ public class DelayTimer : Timer
             isCompleted = true;
         }
     }
-    
-    private float GetFireTime()
-    {
-        return _startTime + duration;
-    }
 }

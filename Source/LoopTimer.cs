@@ -65,9 +65,4 @@ public class LoopTimer : Timer
             SafeCall(_onComplete);
         }
     }
-    
-    private float GetFireTime()
-    {
-        return _startTime + duration;
-    }
 }

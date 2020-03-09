@@ -482,6 +482,11 @@ public abstract class Timer
     {
         _manager.Register(this);
     }
+
+    protected float GetFireTime()
+    {
+        return _startTime + duration;
+    }
     
     protected virtual float GetWorldTime()
     {

@@ -4,7 +4,6 @@ using UnityEngine;
 public class DelayFrameTimer : Timer
 {
     private readonly int _frame;
-    private int _frameCount;
 
     protected override float GetWorldTime()
     {
@@ -30,18 +29,13 @@ public class DelayFrameTimer : Timer
         _frame = frame;
     }
 
-    protected override void OnRestart()
-    {
-        _frameCount = 0;
-    }
-
     protected override void Update()
     {
         if(!CheckUpdate()) return;
 
-        _frameCount++;
         SafeCall(_onUpdate, GetTimeElapsed());
-        if (_frameCount >= _frame)
+        //avoid float precision cause equal judge fail
+        if (Mathf.Abs(GetWorldTime() - GetFireTime()) <= 1e-4)
         {
             SafeCall(_onComplete);
             isCompleted = true;
