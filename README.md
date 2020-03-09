@@ -12,21 +12,21 @@ Fork by GH-ZJ(wustzhangjie@gmail.com)
 
 The Unity Timer package provides the following method for creating timers:
 ```c#
-public static Timer DelayAction(float duration, Action onComplete, Action<float> onUpdate = null, bool useRealTime = false, MonoBehaviour autoDestroyOwner = null);
+public static DelayTimer DelayAction(float duration, Action onComplete, Action<float> onUpdate = null, bool useRealTime = false, MonoBehaviour autoDestroyOwner = null);
 
-public static Timer DelayFrameAction(int frame, Action onComplete, Action<float> onUpdate = null, MonoBehaviour autoDestroyOwner = null);
+public static DelayFrameTimer DelayFrameAction(int frame, Action onComplete, Action<float> onUpdate = null, MonoBehaviour autoDestroyOwner = null);
 
-public static Timer LoopAction(float interval, Action onComplete, Action<float> onUpdate = null,bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null);
+public static LoopTimer LoopAction(float interval, Action onComplete, Action<float> onUpdate = null,bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null);
         
-public static Timer LoopAction(float interval, int count, Action onComplete, Action<float> onUpdate = null, Action onFinished = null, bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null);
+public static LoopTimer LoopAction(float interval, int count, Action onComplete, Action<float> onUpdate = null, Action onFinished = null, bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null);
 
-public static Timer PersistenceDelayAction(float duration, Action onComplete, Action<float> onUpdate = null, bool useRealTime = false, MonoBehaviour autoDestroyOwner = null);
+public static DelayTimer PersistenceDelayAction(float duration, Action onComplete, Action<float> onUpdate = null, bool useRealTime = false, MonoBehaviour autoDestroyOwner = null);
 
-public static Timer PersistenceDelayFrameAction(int frame, Action onComplete, Action<float> onUpdate = null, MonoBehaviour autoDestroyOwner = null);
+public static DelayFrameTimer PersistenceDelayFrameAction(int frame, Action onComplete, Action<float> onUpdate = null, MonoBehaviour autoDestroyOwner = null);
 
-public static Timer PersistenceLoopAction(float interval, Action onComplete, Action<float> onUpdate = null,bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null);
+public static LoopTimer PersistenceLoopAction(float interval, Action onComplete, Action<float> onUpdate = null,bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null);
         
-public static Timer PersistenceLoopAction(float interval, int count, Action onComplete, Action<float> onUpdate = null, Action onFinished = null, bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null);
+public static LoopTimer PersistenceLoopAction(float interval, int count, Action onComplete, Action<float> onUpdate = null, Action onFinished = null, bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null);
 ```
 ## Motivation
 
