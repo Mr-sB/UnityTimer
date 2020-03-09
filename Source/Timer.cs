@@ -342,8 +342,8 @@ public abstract class Timer
         if (onComplete == null && onUpdate == null) return null;
         if (duration <= 0)
         {
-            onUpdate?.Invoke(0);
-            onComplete?.Invoke();
+            SafeCall(onUpdate, 0);
+            SafeCall(onComplete);
             return null;
         }
         
@@ -358,8 +358,8 @@ public abstract class Timer
         if (onComplete == null && onUpdate == null) return null;
         if (frame <= 0)
         {
-            onUpdate?.Invoke(0);
-            onComplete?.Invoke();
+            SafeCall(onUpdate, 0);
+            SafeCall(onComplete);
             return null;
         }
 
