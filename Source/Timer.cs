@@ -16,24 +16,24 @@ using Object = UnityEngine.Object;
 ///
 /// To create and start a Timer, use the <see cref="Register"/> method.
 /// </summary>
-public class Timer
+public abstract class Timer
 {
     #region Public Properties/Fields
 
     /// <summary>
-    /// How long the timer takes to complete from start to finish.
+    /// How long the timer takes to complete from start to finish. (seconds/frame)
     /// </summary>
     public float duration { get; private set; }
 
     /// <summary>
-    /// Whether the timer will run again after completion.
+    /// whether the timer is persistence
     /// </summary>
-    public bool isLooped { get; set; }
-
+    public bool isPersistence { get; private set; }
+    
     /// <summary>
     /// Whether or not the timer completed running. This is false if the timer was cancelled.
     /// </summary>
-    public bool isCompleted { get; private set; }
+    public bool isCompleted { get; protected set; }
 
     /// <summary>
     /// Whether the timer uses real-time or game-time. Real time is unaffected by changes to the timescale
@@ -69,169 +69,50 @@ public class Timer
 
     #region Public Static Methods
 
-    public static Timer DelayAction(float duration, Action onComplete, Action<float> onUpdate = null, bool useRealTime = false, MonoBehaviour autoDestroyOwner = null)
+    public static DelayTimer DelayAction(float duration, Action onComplete, Action<float> onUpdate = null, bool useRealTime = false, MonoBehaviour autoDestroyOwner = null)
     {
-        if (onComplete == null && onUpdate == null) return null;
-        return new Timer(false, duration, onComplete, onUpdate, false, useRealTime, autoDestroyOwner);
+        return DelayActionInternal(false, duration, onComplete, onUpdate, useRealTime, autoDestroyOwner);
     }
     
-    public static Timer DelayFrameAction(int frame, Action onComplete, Action<float> onUpdate = null, MonoBehaviour autoDestroyOwner = null)
+    public static DelayFrameTimer DelayFrameAction(int frame, Action onComplete, Action<float> onUpdate = null, MonoBehaviour autoDestroyOwner = null)
     {
-        if (onComplete == null && onUpdate == null) return null;
-
-        int frameCount = 0;
-        Timer timer = null;
-        bool isFinished = false;
-        void OnUpdateAction(float time)
-        {
-            onUpdate?.Invoke(time);
-            frameCount++;
-            if (frameCount >= frame)
-            {
-                Cancel(timer);
-                if (!isFinished)
-                {
-                    onComplete?.Invoke();
-                    isFinished = true;
-                }
-            }
-        }
-        
-        timer = new Timer(false, 100000, onComplete, OnUpdateAction, false, true, autoDestroyOwner);
-        return timer;
+        return DelayFrameActionInternal(false, frame, onComplete, onUpdate, autoDestroyOwner);
     }
 
-    public static Timer LoopAction(float interval, Action onComplete, Action<float> onUpdate = null,
+    public static LoopTimer LoopAction(float interval, Action onComplete, Action<float> onUpdate = null,
         bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null)
     {
-        if (onComplete == null && onUpdate == null) return null;
-        if (executeOnStart && onComplete != null)
-            onComplete();
-        return new Timer(false, interval, onComplete, onUpdate, true, useRealTime, autoDestroyOwner);
+        return LoopActionInternal(false, interval, onComplete, onUpdate, useRealTime, executeOnStart, autoDestroyOwner);
     }
     
-    public static Timer LoopAction(float interval, int count, Action onComplete, Action<float> onUpdate = null, Action onFinished = null,
+    public static LoopTimer LoopAction(float interval, int loopCount, Action onComplete, Action<float> onUpdate = null, Action onFinished = null,
         bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null)
     {
-        if (onComplete == null && onUpdate == null && onFinished == null) return null;
-        int timer = 0;
-        Timer timerAction = null;
-        bool isFinished = false;
-
-        void OnCompleteAction()
-        {
-            if (timer >= count)
-            {
-                Cancel(timerAction);
-                if (!isFinished)
-                {
-                    onFinished?.Invoke();
-                    isFinished = true;
-                }
-                return;
-            }
-
-            onComplete?.Invoke();
-            timer++;
-            if (timer >= count)
-            {
-                Cancel(timerAction);
-                if (!isFinished)
-                {
-                    onFinished?.Invoke();
-                    isFinished = true;
-                }
-            }
-        }
-
-        if (executeOnStart)
-            OnCompleteAction();
-        timerAction = new Timer(false, interval, OnCompleteAction, onUpdate, true, useRealTime, autoDestroyOwner);
-        return timerAction;
+        return LoopActionInternal(false, interval, loopCount, onComplete, onUpdate, onFinished, useRealTime, executeOnStart, autoDestroyOwner);
     }
 
-    #region Persistence
-    public static Timer PersistenceDelayAction(float duration, Action onComplete, Action<float> onUpdate = null, bool useRealTime = false, MonoBehaviour autoDestroyOwner = null)
+    //Persistence
+    public static DelayTimer PersistenceDelayAction(float duration, Action onComplete, Action<float> onUpdate = null, bool useRealTime = false, MonoBehaviour autoDestroyOwner = null)
     {
-        if (onComplete == null && onUpdate == null) return null;
-        return new Timer(true, duration, onComplete, onUpdate, false, useRealTime, autoDestroyOwner);
+        return DelayActionInternal(true, duration, onComplete, onUpdate, useRealTime, autoDestroyOwner);
     }
     
-    public static Timer PersistenceDelayFrameAction(int frame, Action onComplete, Action<float> onUpdate = null, MonoBehaviour autoDestroyOwner = null)
+    public static DelayFrameTimer PersistenceDelayFrameAction(int frame, Action onComplete, Action<float> onUpdate = null, MonoBehaviour autoDestroyOwner = null)
     {
-        if (onComplete == null && onUpdate == null) return null;
-
-        int frameCount = 0;
-        Timer timer = null;
-        bool isFinished = false;
-        void OnUpdateAction(float time)
-        {
-            onUpdate?.Invoke(time);
-            frameCount++;
-            if (frameCount >= frame)
-            {
-                Cancel(timer);
-                if (!isFinished)
-                {
-                    onComplete?.Invoke();
-                    isFinished = true;
-                }
-            }
-        }
-        
-        timer = new Timer(true, 100000, onComplete, OnUpdateAction, false, true, autoDestroyOwner);
-        return timer;
+        return DelayFrameActionInternal(true, frame, onComplete, onUpdate, autoDestroyOwner);
     }
 
-    public static Timer PersistenceLoopAction(float interval, Action onComplete, Action<float> onUpdate = null,
+    public static LoopTimer PersistenceLoopAction(float interval, Action onComplete, Action<float> onUpdate = null,
         bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null)
     {
-        if (onComplete == null && onUpdate == null) return null;
-        if (executeOnStart && onComplete != null)
-            onComplete();
-        return new Timer(true, interval, onComplete, onUpdate, true, useRealTime, autoDestroyOwner);
+        return LoopActionInternal(true, interval, onComplete, onUpdate, useRealTime, executeOnStart, autoDestroyOwner);
     }
     
-    public static Timer PersistenceLoopAction(float interval, int count, Action onComplete, Action<float> onUpdate = null, Action onFinished = null,
+    public static LoopTimer PersistenceLoopAction(float interval, int loopCount, Action onComplete, Action<float> onUpdate = null, Action onFinished = null,
         bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null)
     {
-        if (onComplete == null && onUpdate == null && onFinished == null) return null;
-        int timer = 0;
-        Timer timerAction = null;
-        bool isFinished = false;
-
-        void OnCompleteAction()
-        {
-            if (timer >= count)
-            {
-                Cancel(timerAction);
-                if (!isFinished)
-                {
-                    onFinished?.Invoke();
-                    isFinished = true;
-                }
-                return;
-            }
-
-            onComplete?.Invoke();
-            timer++;
-            if (timer >= count)
-            {
-                Cancel(timerAction);
-                if (!isFinished)
-                {
-                    onFinished?.Invoke();
-                    isFinished = true;
-                }
-            }
-        }
-
-        if (executeOnStart)
-            OnCompleteAction();
-        timerAction = new Timer(true, interval, OnCompleteAction, onUpdate, true, useRealTime, autoDestroyOwner);
-        return timerAction;
+        return LoopActionInternal(true, interval, loopCount, onComplete, onUpdate, onFinished, useRealTime, executeOnStart, autoDestroyOwner);
     }
-    #endregion
 
     /// <summary>
     /// Restart a timer. The main benefit of this over the method on the instance is that you will not get
@@ -327,13 +208,17 @@ public class Timer
     /// </summary>
     public void Restart()
     {
+        //auto destroy. return
+        if(isOwnerDestroyed) return;
+        
         isCompleted = false;
         _startTime = GetWorldTime();
         _lastUpdateTime = _startTime;
         _timeElapsedBeforeCancel = null;
         _timeElapsedBeforePause = null;
         _timeElapsedBeforeAutoDestroy = null;
-        _manager.Register(this);
+        OnRestart();
+        Register();
     }
     
     /// <summary>
@@ -377,7 +262,7 @@ public class Timer
     }
 
     /// <summary>
-    /// Get how many seconds have elapsed since the start of this timer's current cycle.
+    /// Get how many seconds/frame have elapsed since the start of this timer's current cycle.
     /// </summary>
     /// <returns>The number of seconds that have elapsed since the start of this timer's current cycle, i.e.
     /// the current loop if the timer is looped, or the start if it isn't.
@@ -386,7 +271,7 @@ public class Timer
     ///
     /// If the timer was cancelled/paused, this is equal to the number of seconds that passed between the timer
     /// starting and when it was cancelled/paused.</returns>
-    public float GetTimeElapsed()
+    public virtual float GetTimeElapsed()
     {
         if (this.isCompleted)
         {
@@ -400,7 +285,7 @@ public class Timer
     }
 
     /// <summary>
-    /// Get how many seconds remain before the timer completes.
+    /// Get how many seconds/frame remain before the timer completes.
     /// </summary>
     /// <returns>The number of seconds that remain to be elapsed until the timer is completed. A timer
     /// is only elapsing time if it is not paused, cancelled, or completed. This will be equal to zero
@@ -430,92 +315,9 @@ public class Timer
 
     #endregion
 
-    #region Private Static Properties/Fields
-
-    // responsible for updating all registered timers
-    private static TimerManager _manager;
-
-    #endregion
-
-    #region Private Properties/Fields
-
-    private bool isOwnerDestroyed
-    {
-        get
-        {
-            if (!_hasAutoDestroyOwner || _autoDestroyOwner) return false;
-            if (!_timeElapsedBeforeAutoDestroy.HasValue)
-                _timeElapsedBeforeAutoDestroy = GetTimeElapsed();
-            return true;
-        }
-    }
-
-    // whether the timer is persistence
-    private readonly bool _isPersistence;
-    // whether the timer is in TimeManager
-    private bool _isInManager;
+    #region Private Static Methods
     
-    private readonly Action _onComplete;
-    private readonly Action<float> _onUpdate;
-    private float _startTime;
-    private float _lastUpdateTime;
-
-    // for pausing, we push the start time forward by the amount of time that has passed.
-    // this will mess with the amount of time that elapsed when we're cancelled or paused if we just
-    // check the start time versus the current world time, so we need to cache the time that was elapsed
-    // before we paused/cancelled/autoDestroy
-    private float? _timeElapsedBeforeCancel;
-    private float? _timeElapsedBeforePause;
-    private float? _timeElapsedBeforeAutoDestroy;
-
-    // after the auto destroy owner is destroyed, the timer will expire
-    // this way you don't run into any annoying bugs with timers running and accessing objects
-    // after they have been destroyed
-    private readonly MonoBehaviour _autoDestroyOwner;
-    private readonly bool _hasAutoDestroyOwner;
-
-    private readonly LinkedListNode<Timer> _linkedListNode;
-
-    #endregion
-
-    #region Private Constructor (use static Register method to create new timer)
-
-    static Timer()
-    {
-        // create a manager object to update all the timers if one does not already exist.
-        if (_manager == null)
-        {
-            Init();
-        }
-    }
-    
-    private Timer(bool isPersistence, float duration, Action onComplete, Action<float> onUpdate,
-        bool isLooped, bool usesRealTime, MonoBehaviour autoDestroyOwner)
-    {
-        this._isPersistence = isPersistence;
-        this.duration = duration;
-        this._onComplete = onComplete;
-        this._onUpdate = onUpdate;
-
-        this.isLooped = isLooped;
-        this.usesRealTime = usesRealTime;
-
-        this._autoDestroyOwner = autoDestroyOwner;
-        this._hasAutoDestroyOwner = autoDestroyOwner != null;
-
-        this._startTime = this.GetWorldTime();
-        this._lastUpdateTime = this._startTime;
-        
-        _linkedListNode = new LinkedListNode<Timer>(this);
-        
-        _manager.Register(this);
-    }
-
-    #endregion
-
-    #region Private Methods
-
-    private static void Init()
+    private static void InitTimerManager()
     {
         // create a manager object to update all the timers if one does not already exist.
         if (_manager == null)
@@ -533,72 +335,204 @@ public class Timer
             Object.DontDestroyOnLoad(_manager.gameObject.transform.root.gameObject);
         }
     }
+
+    private static DelayTimer DelayActionInternal(bool isPersistence, float duration, Action onComplete, Action<float> onUpdate = null, bool useRealTime = false, MonoBehaviour autoDestroyOwner = null)
+    {
+        //Check
+        if (onComplete == null && onUpdate == null) return null;
+        if (duration <= 0)
+        {
+            onUpdate?.Invoke(0);
+            onComplete?.Invoke();
+            return null;
+        }
+        
+        var timer = new DelayTimer(isPersistence, duration, onComplete, onUpdate, useRealTime, autoDestroyOwner);
+        timer.Init();
+        return timer;
+    }
     
-    private float GetWorldTime()
+    private static DelayFrameTimer DelayFrameActionInternal(bool isPersistence, int frame, Action onComplete, Action<float> onUpdate = null, MonoBehaviour autoDestroyOwner = null)
+    {
+        //Check
+        if (onComplete == null && onUpdate == null) return null;
+        if (frame <= 0)
+        {
+            onUpdate?.Invoke(0);
+            onComplete?.Invoke();
+            return null;
+        }
+
+        var timer = new DelayFrameTimer(isPersistence, frame, onComplete, onUpdate, autoDestroyOwner);
+        timer.Init();
+        return timer;
+    }
+
+    private static LoopTimer LoopActionInternal(bool isPersistence, float interval, Action onComplete, Action<float> onUpdate = null,
+        bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null)
+    {
+        if (onComplete == null && onUpdate == null) return null;
+        var timer = new LoopTimer(isPersistence, executeOnStart, interval, onComplete, onUpdate, useRealTime, autoDestroyOwner);
+        timer.Init();
+        return timer;
+    }
+    
+    private static LoopTimer LoopActionInternal(bool isPersistence, float interval, int loopCount, Action onComplete, Action<float> onUpdate = null, Action onFinished = null,
+        bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null)
+    {
+        //Check
+        if (onComplete == null && onUpdate == null && onFinished == null) return null;
+        if (loopCount <= 0)
+        {
+            SafeCall(onFinished);
+            return null;
+        }
+        var timer = new LoopTimer(isPersistence, executeOnStart, interval, loopCount, onComplete, onUpdate, onFinished, useRealTime, autoDestroyOwner);
+        timer.Init();
+        return timer;
+    }
+
+    #endregion
+
+    #region Private Static Properties/Fields
+
+    // responsible for updating all registered timers
+    private static TimerManager _manager;
+
+    #endregion
+
+    #region Private/Protected Properties/Fields
+
+    private bool isOwnerDestroyed
+    {
+        get
+        {
+            if (!_hasAutoDestroyOwner || _autoDestroyOwner) return false;
+            if (!_timeElapsedBeforeAutoDestroy.HasValue)
+                _timeElapsedBeforeAutoDestroy = GetTimeElapsed();
+            return true;
+        }
+    }
+    
+    // whether the timer is in TimeManager
+    private bool _isInManager;
+
+    protected Action _onComplete;
+    protected Action<float> _onUpdate;
+    protected float _startTime;
+    protected float _lastUpdateTime;
+
+    // for pausing, we push the start time forward by the amount of time that has passed.
+    // this will mess with the amount of time that elapsed when we're cancelled or paused if we just
+    // check the start time versus the current world time, so we need to cache the time that was elapsed
+    // before we paused/cancelled/autoDestroy
+    protected float? _timeElapsedBeforeCancel;
+    protected float? _timeElapsedBeforePause;
+    protected float? _timeElapsedBeforeAutoDestroy;
+
+    // after the auto destroy owner is destroyed, the timer will expire
+    // this way you don't run into any annoying bugs with timers running and accessing objects
+    // after they have been destroyed
+    private readonly MonoBehaviour _autoDestroyOwner;
+    private readonly bool _hasAutoDestroyOwner;
+
+    private readonly LinkedListNode<Timer> _linkedListNode;
+
+    #endregion
+
+    #region Constructor (use static method to create new timer)
+
+    static Timer()
+    {
+        // create a manager object to update all the timers if one does not already exist.
+        if (_manager == null)
+        {
+            InitTimerManager();
+        }
+    }
+    
+    protected Timer(bool isPersistence, float duration, Action onComplete, Action<float> onUpdate, bool usesRealTime, MonoBehaviour autoDestroyOwner)
+    {
+        this.isPersistence = isPersistence;
+        this.duration = duration;
+        this._onComplete = onComplete;
+        this._onUpdate = onUpdate;
+
+        this.usesRealTime = usesRealTime;
+
+        this._autoDestroyOwner = autoDestroyOwner;
+        this._hasAutoDestroyOwner = autoDestroyOwner != null;
+        
+        _linkedListNode = new LinkedListNode<Timer>(this);
+    }
+
+    #endregion
+
+    #region Private/Protected Methods
+
+    private void Init()
+    {
+        //avoid virtual member call in constructor
+        _startTime = GetWorldTime();
+        _lastUpdateTime = _startTime;
+        Register();
+    }
+    
+    private void Register()
+    {
+        _manager.Register(this);
+    }
+    
+    protected virtual float GetWorldTime()
     {
         return this.usesRealTime ? Time.realtimeSinceStartup : Time.time;
     }
 
-    private float GetFireTime()
+    protected abstract void Update();
+    
+    protected virtual void OnRestart() { }
+    
+    protected bool CheckUpdate()
     {
-        return this._startTime + this.duration;
+        if (isDone) return false;
+
+        if (isPaused)
+        {
+            var curTime = GetWorldTime();
+            _startTime += curTime - _lastUpdateTime;
+            _lastUpdateTime = curTime;
+            return false;
+        }
+
+        _lastUpdateTime = GetWorldTime();
+        return true;
     }
 
-    private float GetTimeDelta()
+    protected static void SafeCall(Action action)
     {
-        return this.GetWorldTime() - this._lastUpdateTime;
+        if(action == null) return;
+        try
+        {
+            action();
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e);
+            throw;
+        }
     }
-
-    private void Update()
+    
+    protected static void SafeCall<T>(Action<T> action, T arg)
     {
-        if (this.isDone)
+        if(action == null) return;
+        try
         {
-            return;
+            action(arg);
         }
-
-        if (this.isPaused)
+        catch (Exception e)
         {
-            this._startTime += this.GetTimeDelta();
-            this._lastUpdateTime = this.GetWorldTime();
-            return;
-        }
-
-        this._lastUpdateTime = this.GetWorldTime();
-
-        if (this._onUpdate != null)
-        {
-            try
-            {
-                this._onUpdate(this.GetTimeElapsed());
-            }
-            catch (Exception e)
-            {
-                Debug.LogError(e);
-            }
-        }
-
-        if (this.GetWorldTime() >= this.GetFireTime())
-        {
-            if (this._onComplete != null)
-            {
-                try
-                {
-                    this._onComplete();
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError(e);
-                }
-            }
-            
-            if (this.isLooped)
-            {
-                this._startTime = this.GetWorldTime();
-            }
-            else
-            {
-                this.isCompleted = true;
-            }
+            Debug.LogError(e);
+            throw;
         }
     }
 
@@ -613,8 +547,7 @@ public class Timer
     /// </summary>
     private class TimerManager : MonoBehaviour
     {
-        //不会被Timer.xxAll的方法影响
-        private readonly LinkedList<Timer> _persistenceTimers = new LinkedList<Timer>();
+        private readonly LinkedList<Timer> _persistenceTimers = new LinkedList<Timer>();//can not be effected by Timer.xxAllRegisteredTimers() methods
         private readonly LinkedList<Timer> _timers = new LinkedList<Timer>();
 
         // buffer adding timers so we don't edit a collection during iteration
@@ -678,7 +611,7 @@ public class Timer
             //no need to add
             if (timer._isInManager) return;
             timer._isInManager = true;
-            if(!timer._isPersistence)
+            if(!timer.isPersistence)
                 _timersToAdd.Add(timer);
             else
                 _persistenceTimersToAdd.Add(timer);

@@ -1384,6 +1384,7 @@ MonoBehaviour:
   CancelTimerButton: {fileID: 589068323}
   PauseTimerButton: {fileID: 1270757752}
   ResumeTimerButton: {fileID: 1589048210}
+  RestartTimerButton: {fileID: 1318108784}
   IsLoopedToggle: {fileID: 486803762}
   UseGameTimeToggle: {fileID: 1100837634}
   TimescaleSlider: {fileID: 1864528867}

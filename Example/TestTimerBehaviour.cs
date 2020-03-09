@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using System.Collections;
 using UnityEngine.UI;
 
 namespace UnityTimer.Examples
@@ -15,6 +14,7 @@ namespace UnityTimer.Examples
         public Button CancelTimerButton;
         public Button PauseTimerButton;
         public Button ResumeTimerButton;
+        public Button RestartTimerButton;
 
         public Toggle IsLoopedToggle;
         public Toggle UseGameTimeToggle;
@@ -39,9 +39,10 @@ namespace UnityTimer.Examples
 
         private int _numLoops;
         private Timer _testTimer;
-
+        
         private void Awake()
         {
+            RestartTimerButton.interactable = false;
             ResetState();
         }
 
@@ -57,18 +58,19 @@ namespace UnityTimer.Examples
 
             // this is the important code example bit where we register a new timer
             if (IsLoopedToggle.isOn)
-                _testTimer = Timer.LoopAction(GetDurationValue(), () => _numLoops++,
+                _testTimer = this.LoopAction(GetDurationValue(), () => _numLoops++,
                     secondsElapsed =>
                     {
                         UpdateText.text = string.Format("Timer ran update callback: {0:F2} seconds", secondsElapsed);
                     }, !UseGameTimeToggle.isOn);
             else
-                _testTimer = Timer.DelayAction(GetDurationValue(), () => _numLoops++,
+                _testTimer = this.DelayAction(GetDurationValue(), () => _numLoops++,
                     secondsElapsed =>
                     {
                         UpdateText.text = string.Format("Timer ran update callback: {0:F2} seconds", secondsElapsed);
                     }, !UseGameTimeToggle.isOn);
             CancelTimerButton.interactable = true;
+            RestartTimerButton.interactable = true;
         }
 
         public void CancelTestTimer()
@@ -102,7 +104,6 @@ namespace UnityTimer.Examples
             }
 
             Time.timeScale = TimescaleSlider.value;
-            _testTimer.isLooped = IsLoopedToggle.isOn;
 
             TimeElapsedText.text = string.Format("Time elapsed: {0:F2} seconds", _testTimer.GetTimeElapsed());
             TimeRemainingText.text = string.Format("Time remaining: {0:F2} seconds", _testTimer.GetTimeRemaining());
