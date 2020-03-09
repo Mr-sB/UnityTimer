@@ -332,7 +332,7 @@ public abstract class Timer
                 GameObject managerObject = new GameObject("TimerManager");
                 _manager = managerObject.AddComponent<TimerManager>();
             }
-            Object.DontDestroyOnLoad(_manager.gameObject.transform.root.gameObject);
+            Object.DontDestroyOnLoad(_manager.transform.root.gameObject);
         }
     }
 
