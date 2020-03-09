@@ -417,8 +417,8 @@ public abstract class Timer
     // whether the timer is in TimeManager
     private bool _isInManager;
 
-    protected Action _onComplete;
-    protected Action<float> _onUpdate;
+    protected readonly Action _onComplete;
+    protected readonly Action<float> _onUpdate;
     protected float _startTime;
     protected float _lastUpdateTime;
 

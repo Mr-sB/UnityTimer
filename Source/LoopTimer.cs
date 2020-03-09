@@ -13,7 +13,7 @@ public class LoopTimer : Timer
     {
         _executeOnStart = executeOnStart;
         if (_executeOnStart)
-            SafeCall(_onComplete);
+            OnComplete();
     }
     
     public LoopTimer(bool isPersistence, bool executeOnStart, float duration, int loopCount, Action onComplete, Action<float> onUpdate, Action onFinished, bool usesRealTime, MonoBehaviour autoDestroyOwner)
@@ -22,25 +22,15 @@ public class LoopTimer : Timer
         _executeOnStart = executeOnStart;
         _loopCount = loopCount;
         _onFinished = onFinished;
-        _onComplete = delegate
-        {
-            _timer++;
-            SafeCall(onComplete);
-            if (_timer >= _loopCount.Value)
-            {
-                isCompleted = true;
-                SafeCall(_onFinished);
-            }
-        };
         if (_executeOnStart)
-            SafeCall(_onComplete);
+            OnComplete();
     }
 
     protected override void OnRestart()
     {
         _timer = 0;
         if (_executeOnStart)
-            SafeCall(_onComplete);
+            OnComplete();
     }
 
     protected override void Update()
@@ -52,9 +42,27 @@ public class LoopTimer : Timer
 
         if (GetWorldTime() >= GetFireTime())
         {
-            SafeCall(_onComplete);
+            OnComplete();
             if(!isCompleted)
                 _startTime = GetWorldTime();
+        }
+    }
+
+    private void OnComplete()
+    {
+        if (_loopCount.HasValue)
+        {
+            _timer++;
+            SafeCall(_onComplete);
+            if (_timer >= _loopCount.Value)
+            {
+                isCompleted = true;
+                SafeCall(_onFinished);
+            }
+        }
+        else
+        {
+            SafeCall(_onComplete);
         }
     }
     
