@@ -319,21 +319,12 @@ public abstract class Timer
     
     private static void InitTimerManager()
     {
+        if(_manager != null) return;
         // create a manager object to update all the timers if one does not already exist.
+        _manager = Object.FindObjectOfType<TimerManager>();
         if (_manager == null)
-        {
-            TimerManager managerInScene = Object.FindObjectOfType<TimerManager>();
-            if (managerInScene != null)
-            {
-                _manager = managerInScene;
-            }
-            else
-            {
-                GameObject managerObject = new GameObject("TimerManager");
-                _manager = managerObject.AddComponent<TimerManager>();
-            }
-            Object.DontDestroyOnLoad(_manager.transform.root.gameObject);
-        }
+            _manager = new GameObject(nameof(TimerManager)).AddComponent<TimerManager>();
+        Object.DontDestroyOnLoad(_manager.transform.root.gameObject);
     }
 
     private static DelayTimer DelayActionInternal(bool isPersistence, float duration, Action onComplete, Action<float> onUpdate = null, bool useRealTime = false, MonoBehaviour autoDestroyOwner = null)
@@ -444,11 +435,7 @@ public abstract class Timer
 
     static Timer()
     {
-        // create a manager object to update all the timers if one does not already exist.
-        if (_manager == null)
-        {
-            InitTimerManager();
-        }
+        InitTimerManager();
     }
     
     protected Timer(bool isPersistence, float duration, Action onComplete, Action<float> onUpdate, bool usesRealTime, MonoBehaviour autoDestroyOwner)
@@ -605,15 +592,7 @@ public abstract class Timer
                 timer.Resume();
             }
         }
-
-        // update all the registered timers on every frame
-        private void Update()
-        {
-            UpdateTimers();
-            UpdatePersistenceTimers();
-        }
         
-        //Timer
         public void Register(Timer timer)
         {
             if(!timer.isPersistence)
@@ -622,46 +601,36 @@ public abstract class Timer
                 _persistenceTimersToAdd.Add(timer);
         }
         
+        // update all the registered timers on every frame
+        private void Update()
+        {
+            UpdateTimers();
+            UpdatePersistenceTimers();
+        }
+        
+        //Timer
         private void UpdateTimers()
         {
-            int toAddCount = _timersToAdd.Count;
-            if (toAddCount > 0)
-            {
-                for (int i = 0; i < toAddCount; i++)
-                    _timers.AddLast(_timersToAdd[i]._linkedListNode);
-                _timersToAdd.Clear();
-            }
-
-            var node = _timers.First;
-            while (node != null)
-            {
-                var timer = node.Value;
-                timer.Update();
-                if (timer.isDone)
-                {
-                    timer._isInManager = false;
-                    var toRemoveNode = node;
-                    node = node.Next;
-                    //remove
-                    _timers.Remove(toRemoveNode);
-                }
-                else
-                    node = node.Next;
-            }
+            UpdateTimersInternal(_timers, _timersToAdd);
         }
         
         //PersistenceTimer
         private void UpdatePersistenceTimers()
         {
-            int toAddCount = _persistenceTimersToAdd.Count;
+            UpdateTimersInternal(_persistenceTimers, _persistenceTimersToAdd);
+        }
+
+        private static void UpdateTimersInternal(LinkedList<Timer> timers, List<Timer> timersToAdd)
+        {
+            int toAddCount = timersToAdd.Count;
             if (toAddCount > 0)
             {
                 for (int i = 0; i < toAddCount; i++)
-                    _persistenceTimers.AddLast(_persistenceTimersToAdd[i]._linkedListNode);
-                _persistenceTimersToAdd.Clear();
+                    timers.AddLast(timersToAdd[i]._linkedListNode);
+                timersToAdd.Clear();
             }
 
-            var node = _persistenceTimers.First;
+            var node = timers.First;
             while (node != null)
             {
                 var timer = node.Value;
@@ -672,7 +641,7 @@ public abstract class Timer
                     var toRemoveNode = node;
                     node = node.Next;
                     //remove
-                    _persistenceTimers.Remove(toRemoveNode);
+                    timers.Remove(toRemoveNode);
                 }
                 else
                     node = node.Next;
