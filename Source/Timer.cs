@@ -23,12 +23,12 @@ public abstract class Timer
     /// <summary>
     /// How long the timer takes to complete from start to finish. (seconds/frame)
     /// </summary>
-    public float duration { get; private set; }
+    public float duration { get; }
 
     /// <summary>
     /// whether the timer is persistence
     /// </summary>
-    public bool isPersistence { get; private set; }
+    public bool isPersistence { get; }
     
     /// <summary>
     /// Whether or not the timer completed running. This is false if the timer was cancelled.
@@ -39,7 +39,7 @@ public abstract class Timer
     /// Whether the timer uses real-time or game-time. Real time is unaffected by changes to the timescale
     /// of the game(e.g. pausing, slow-mo), while game time is affected.
     /// </summary>
-    public bool usesRealTime { get; private set; }
+    public bool usesRealTime { get; }
 
     /// <summary>
     /// Whether the timer is currently paused.
@@ -271,7 +271,7 @@ public abstract class Timer
     ///
     /// If the timer was cancelled/paused, this is equal to the number of seconds that passed between the timer
     /// starting and when it was cancelled/paused.</returns>
-    public virtual float GetTimeElapsed()
+    public float GetTimeElapsed()
     {
         if (this.isCompleted)
         {
@@ -420,15 +420,15 @@ public abstract class Timer
     protected readonly Action _onComplete;
     protected readonly Action<float> _onUpdate;
     protected float _startTime;
-    protected float _lastUpdateTime;
+    private float _lastUpdateTime;
 
     // for pausing, we push the start time forward by the amount of time that has passed.
     // this will mess with the amount of time that elapsed when we're cancelled or paused if we just
     // check the start time versus the current world time, so we need to cache the time that was elapsed
     // before we paused/cancelled/autoDestroy
-    protected float? _timeElapsedBeforeCancel;
-    protected float? _timeElapsedBeforePause;
-    protected float? _timeElapsedBeforeAutoDestroy;
+    private float? _timeElapsedBeforeCancel;
+    private float? _timeElapsedBeforePause;
+    private float? _timeElapsedBeforeAutoDestroy;
 
     // after the auto destroy owner is destroyed, the timer will expire
     // this way you don't run into any annoying bugs with timers running and accessing objects
