@@ -480,6 +480,9 @@ public abstract class Timer
     
     private void Register()
     {
+        //no need to add
+        if (_isInManager) return;
+        _isInManager = true;
         _manager.Register(this);
     }
 
@@ -613,9 +616,6 @@ public abstract class Timer
         //Timer
         public void Register(Timer timer)
         {
-            //no need to add
-            if (timer._isInManager) return;
-            timer._isInManager = true;
             if(!timer.isPersistence)
                 _timersToAdd.Add(timer);
             else
