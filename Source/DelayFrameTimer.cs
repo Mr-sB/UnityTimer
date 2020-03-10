@@ -3,8 +3,6 @@ using UnityEngine;
 
 public class DelayFrameTimer : Timer
 {
-    private readonly int _frame;
-
     protected override float GetWorldTime()
     {
         return Time.frameCount;
@@ -26,7 +24,6 @@ public class DelayFrameTimer : Timer
     public DelayFrameTimer(bool isPersistence, int frame, Action onComplete, Action<float> onUpdate, MonoBehaviour autoDestroyOwner)
         : base(isPersistence, frame, onComplete, onUpdate, true, autoDestroyOwner)
     {
-        _frame = frame;
     }
 
     protected override void Update()

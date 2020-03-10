@@ -8,16 +8,16 @@ public class LoopTimer : Timer
     private readonly Action _onFinished;
     private int _timer;
     
-    public LoopTimer(bool isPersistence, bool executeOnStart, float duration, Action onComplete, Action<float> onUpdate, bool usesRealTime, MonoBehaviour autoDestroyOwner)
-        : base(isPersistence, duration, onComplete, onUpdate, usesRealTime, autoDestroyOwner)
+    public LoopTimer(bool isPersistence, bool executeOnStart, float interval, Action onComplete, Action<float> onUpdate, bool usesRealTime, MonoBehaviour autoDestroyOwner)
+        : base(isPersistence, interval, onComplete, onUpdate, usesRealTime, autoDestroyOwner)
     {
         _executeOnStart = executeOnStart;
         if (_executeOnStart)
             OnComplete();
     }
     
-    public LoopTimer(bool isPersistence, bool executeOnStart, float duration, int loopCount, Action onComplete, Action<float> onUpdate, Action onFinished, bool usesRealTime, MonoBehaviour autoDestroyOwner)
-        : base(isPersistence, duration, onComplete, onUpdate, usesRealTime, autoDestroyOwner)
+    public LoopTimer(bool isPersistence, bool executeOnStart, float interval, int loopCount, Action onComplete, Action<float> onUpdate, Action onFinished, bool usesRealTime, MonoBehaviour autoDestroyOwner)
+        : base(isPersistence, interval, onComplete, onUpdate, usesRealTime, autoDestroyOwner)
     {
         _executeOnStart = executeOnStart;
         _loopCount = loopCount;
