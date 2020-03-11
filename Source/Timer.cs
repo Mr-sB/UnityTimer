@@ -1,10 +1,3 @@
-/*
- * Unity Timer
- *
- * Version: 1.0
- * By: Alexander Biggs + Adam Robinson-Yu
- */
-
 using UnityEngine;
 using System;
 using System.Collections.Generic;
@@ -13,8 +6,6 @@ using Object = UnityEngine.Object;
 /// <summary>
 /// Allows you to run events on a delay without the use of <see cref="Coroutine"/>s
 /// or <see cref="MonoBehaviour"/>s.
-///
-/// To create and start a Timer, use the <see cref="Register"/> method.
 /// </summary>
 public abstract class Timer
 {
