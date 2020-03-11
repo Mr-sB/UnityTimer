@@ -18,8 +18,8 @@ public class DelayFrameTimer : Timer
         if(!CheckUpdate()) return;
 
         SafeCall(_onUpdate, GetTimeElapsed());
-        //avoid float precision cause equal judge fail
-        if (Mathf.Abs(GetWorldTime() - GetFireTime()) <= 1e-4)
+        //minus 1e-4 to avoid float precision cause equal judge fail
+        if (GetWorldTime() >= GetFireTime() - 1e-4)
         {
             SafeCall(_onComplete);
             isCompleted = true;
