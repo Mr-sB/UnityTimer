@@ -98,6 +98,7 @@ namespace UnityTimer.Examples
 
         private void Update()
         {
+            NumberOfLoopsText.text = string.Format("# Loops: {0}", _numLoops);
             if (_testTimer == null)
             {
                 return;
@@ -111,7 +112,6 @@ namespace UnityTimer.Examples
                 _testTimer.GetRatioComplete()*100);
             PercentageRemainingText.text = String.Format("Percentage remaining: {0:F4}%",
                 _testTimer.GetRatioRemaining()*100);
-            NumberOfLoopsText.text = string.Format("# Loops: {0}", _numLoops);
             IsCancelledText.text = string.Format("Is Cancelled: {0}", _testTimer.isCancelled);
             IsCompletedText.text = string.Format("Is Completed: {0}", _testTimer.isCompleted);
             IsPausedText.text = String.Format("Is Paused: {0}", _testTimer.isPaused);
