@@ -125,10 +125,10 @@ namespace UnityTimer.Examples
 
         private bool ShouldShowRestartText()
         {
-            return !_testTimer.isDone && // the timer is in progress and...
-                   ((UseGameTimeToggle.isOn && _testTimer.usesRealTime) || // we switched to real-time or
-                    (!UseGameTimeToggle.isOn && !_testTimer.usesRealTime) || // we switched to game-time or
-                    Mathf.Abs(GetDurationValue() - _testTimer.duration) >= Mathf.Epsilon); // our duration changed
+            var timerType = _testTimer.GetType();
+            return IsLoopedToggle.isOn != (timerType == typeof(LoopTimer)) || // we switched timer type or
+                    UseGameTimeToggle.isOn == _testTimer.usesRealTime || // we switched usesRealTime or
+                    Mathf.Abs(GetDurationValue() - _testTimer.duration) >= Mathf.Epsilon; // our duration changed
         }
 
         private float GetDurationValue()
