@@ -118,7 +118,7 @@ public abstract class Timer
     /// Restart a timer. The main benefit of this over the method on the instance is that you will not get
     /// a <see cref="NullReferenceException"/> if the timer is null.
     /// </summary>
-    /// <param name="timer">The timer to cancel.</param>
+    /// <param name="timer">The timer to restart.</param>
     public static void Restart(Timer timer)
     {
         if (timer != null)
