@@ -504,7 +504,6 @@ public abstract class Timer
         catch (Exception e)
         {
             Debug.LogError(e);
-            throw;
         }
     }
     
@@ -518,7 +517,6 @@ public abstract class Timer
         catch (Exception e)
         {
             Debug.LogError(e);
-            throw;
         }
     }
 

@@ -40,11 +40,12 @@ public class LoopTimer : Timer
         if (_onUpdate != null)
             SafeCall(_onUpdate, GetTimeElapsed());
 
-        if (GetWorldTime() >= GetFireTime())
+        var timeDifference = GetWorldTime() - GetFireTime();
+        if (timeDifference >= 0)
         {
             OnComplete();
             if(!isCompleted)
-                _startTime = GetWorldTime();
+                _startTime = GetWorldTime() - timeDifference;//Avoid time error accumulation
         }
     }
 
@@ -56,13 +57,11 @@ public class LoopTimer : Timer
             SafeCall(_onComplete);
             if (_timer >= _loopCount.Value)
             {
-                isCompleted = true;
                 SafeCall(_onFinished);
+                isCompleted = true;
             }
         }
         else
-        {
             SafeCall(_onComplete);
-        }
     }
 }
