@@ -369,7 +369,7 @@ namespace GameUtil
             bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null)
         {
             if (onComplete == null && onUpdate == null) return null;
-            var timer = new LoopTimer(isPersistence, executeOnStart, interval, onComplete, onUpdate, useRealTime,
+            var timer = new LoopTimer(isPersistence, interval, onComplete, onUpdate, useRealTime, executeOnStart,
                 autoDestroyOwner);
             timer.Init();
             return timer;
@@ -387,8 +387,8 @@ namespace GameUtil
                 return null;
             }
 
-            var timer = new LoopTimer(isPersistence, executeOnStart, interval, loopCount, onComplete, onUpdate,
-                onFinished, useRealTime, autoDestroyOwner);
+            var timer = new LoopTimer(isPersistence, interval, loopCount, onComplete, onUpdate,
+                onFinished, useRealTime, executeOnStart, autoDestroyOwner);
             timer.Init();
             return timer;
         }

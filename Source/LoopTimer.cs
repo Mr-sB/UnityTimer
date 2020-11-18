@@ -10,8 +10,8 @@ namespace GameUtil
         private Action _onFinished;
         private int _timer;
 
-        public LoopTimer(bool isPersistence, bool executeOnStart, float interval, Action onComplete,
-            Action<float> onUpdate, bool usesRealTime, MonoBehaviour autoDestroyOwner)
+        public LoopTimer(bool isPersistence, float interval, Action onComplete,
+            Action<float> onUpdate, bool usesRealTime, bool executeOnStart, MonoBehaviour autoDestroyOwner)
             : base(isPersistence, interval, onComplete, onUpdate, usesRealTime, autoDestroyOwner)
         {
             _executeOnStart = executeOnStart;
@@ -19,8 +19,8 @@ namespace GameUtil
                 OnComplete();
         }
 
-        public LoopTimer(bool isPersistence, bool executeOnStart, float interval, int loopCount, Action onComplete,
-            Action<float> onUpdate, Action onFinished, bool usesRealTime, MonoBehaviour autoDestroyOwner)
+        public LoopTimer(bool isPersistence, float interval, int loopCount, Action onComplete,
+            Action<float> onUpdate, Action onFinished, bool usesRealTime, bool executeOnStart, MonoBehaviour autoDestroyOwner)
             : base(isPersistence, interval, onComplete, onUpdate, usesRealTime, autoDestroyOwner)
         {
             _executeOnStart = executeOnStart;
@@ -69,27 +69,27 @@ namespace GameUtil
                 SafeCall(_onComplete);
         }
 
-        public void Restart(bool newExecuteOnStart, float newInterval, Action newOnComplete, Action<float> newOnUpdate, bool newUsesRealTime)
+        public void Restart(float newInterval, Action newOnComplete, Action<float> newOnUpdate, bool newUsesRealTime, bool newExecuteOnStart)
         {
-            _executeOnStart = newExecuteOnStart;
             duration = newInterval;
             _loopCount = null;
             _onComplete = newOnComplete;
             _onUpdate = newOnUpdate;
             _onFinished = null;
             usesRealTime = newUsesRealTime;
+            _executeOnStart = newExecuteOnStart;
             Restart();
         }
         
-        public void Restart(bool newExecuteOnStart, float newInterval, int newLoopCount, Action newOnComplete, Action<float> newOnUpdate, Action newOnFinished, bool newUsesRealTime)
+        public void Restart(float newInterval, int newLoopCount, Action newOnComplete, Action<float> newOnUpdate, Action newOnFinished, bool newUsesRealTime, bool newExecuteOnStart)
         {
-            _executeOnStart = newExecuteOnStart;
             duration = newInterval;
             _loopCount = newLoopCount;
             _onComplete = newOnComplete;
             _onUpdate = newOnUpdate;
             _onFinished = newOnFinished;
             usesRealTime = newUsesRealTime;
+            _executeOnStart = newExecuteOnStart;
             Restart();
         }
     }
