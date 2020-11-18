@@ -1,24 +1,56 @@
 using System;
 using UnityEngine;
 
-public class DelayTimer : Timer
+namespace GameUtil
 {
-    public DelayTimer(bool isPersistence, float duration, Action onComplete, Action<float> onUpdate, bool usesRealTime, MonoBehaviour autoDestroyOwner)
-        : base(isPersistence, duration, onComplete, onUpdate, usesRealTime, autoDestroyOwner)
+    public class DelayTimer : Timer
     {
-    }
-    
-    protected override void Update()
-    {
-        if(!CheckUpdate()) return;
-
-        if (_onUpdate != null)
-            SafeCall(_onUpdate, GetTimeElapsed());
-
-        if (GetWorldTime() >= GetFireTime())
+        public DelayTimer(bool isPersistence, float duration, Action onComplete, Action<float> onUpdate,
+            bool usesRealTime, MonoBehaviour autoDestroyOwner)
+            : base(isPersistence, duration, onComplete, onUpdate, usesRealTime, autoDestroyOwner)
         {
-            SafeCall(_onComplete);
-            isCompleted = true;
+        }
+
+        protected override void Update()
+        {
+            if (!CheckUpdate()) return;
+
+            if (_onUpdate != null)
+                SafeCall(_onUpdate, GetTimeElapsed());
+
+            if (GetWorldTime() >= GetFireTime())
+            {
+                SafeCall(_onComplete);
+                isCompleted = true;
+            }
+        }
+
+        public void Restart(float newDuration)
+        {
+            duration = newDuration;
+            Restart();
+        }
+
+        public void Restart(bool newUseRealTime)
+        {
+            usesRealTime = newUseRealTime;
+            Restart();
+        }
+
+        public void Restart(float newDuration, bool newUseRealTime)
+        {
+            duration = newDuration;
+            usesRealTime = newUseRealTime;
+            Restart();
+        }
+
+        public void Restart(float newDuration, Action newOnComplete, Action<float> newOnUpdate, bool newUseRealTime)
+        {
+            duration = newDuration;
+            usesRealTime = newUseRealTime;
+            _onComplete = newOnComplete;
+            _onUpdate = newOnUpdate;
+            Restart();
         }
     }
 }
