@@ -24,8 +24,8 @@ namespace GameUtil
             //minus 1e-4 to avoid float precision cause equal judge fail
             if (GetWorldTime() >= GetFireTime() - 1e-4)
             {
-                SafeCall(_onComplete);
                 isCompleted = true;
+                SafeCall(_onComplete);
             }
         }
 

@@ -20,8 +20,8 @@ namespace GameUtil
 
             if (GetWorldTime() >= GetFireTime())
             {
-                SafeCall(_onComplete);
                 isCompleted = true;
+                SafeCall(_onComplete);
             }
         }
 

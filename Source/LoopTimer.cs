@@ -61,8 +61,8 @@ namespace GameUtil
                 SafeCall(_onComplete);
                 if (_timer >= _loopCount.Value)
                 {
-                    SafeCall(_onFinished);
                     isCompleted = true;
+                    SafeCall(_onFinished);
                 }
             }
             else
