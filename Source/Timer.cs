@@ -80,12 +80,20 @@ namespace GameUtil
             return LoopActionInternal(false, interval, onComplete, onUpdate, useRealTime, executeOnStart,
                 autoDestroyOwner);
         }
-
-        public static LoopTimer LoopAction(float interval, int loopCount, Action onComplete,
+        
+        public static LoopUntilTimer LoopUntilAction(float interval, Func<LoopUntilTimer, bool> loopUntil, Action onComplete,
             Action<float> onUpdate = null, Action onFinished = null,
             bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null)
         {
-            return LoopActionInternal(false, interval, loopCount, onComplete, onUpdate, onFinished, useRealTime,
+            return LoopUntilActionInternal(false, interval, loopUntil, onComplete, onUpdate, onFinished, useRealTime,
+                executeOnStart, autoDestroyOwner);
+        }
+
+        public static LoopCountTimer LoopCountAction(float interval, int loopCount, Action onComplete,
+            Action<float> onUpdate = null, Action onFinished = null,
+            bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null)
+        {
+            return LoopCountActionInternal(false, interval, loopCount, onComplete, onUpdate, onFinished, useRealTime,
                 executeOnStart, autoDestroyOwner);
         }
 
@@ -109,11 +117,19 @@ namespace GameUtil
                 autoDestroyOwner);
         }
 
-        public static LoopTimer PersistenceLoopAction(float interval, int loopCount, Action onComplete,
+        public static LoopUntilTimer PersistenceLoopUntilAction(float interval, Func<LoopUntilTimer, bool> loopUntil, Action onComplete,
             Action<float> onUpdate = null, Action onFinished = null,
             bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null)
         {
-            return LoopActionInternal(true, interval, loopCount, onComplete, onUpdate, onFinished, useRealTime,
+            return LoopUntilActionInternal(true, interval, loopUntil, onComplete, onUpdate, onFinished, useRealTime,
+                executeOnStart, autoDestroyOwner);
+        }
+
+        public static LoopCountTimer PersistenceLoopCountAction(float interval, int loopCount, Action onComplete,
+            Action<float> onUpdate = null, Action onFinished = null,
+            bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null)
+        {
+            return LoopCountActionInternal(true, interval, loopCount, onComplete, onUpdate, onFinished, useRealTime,
                 executeOnStart, autoDestroyOwner);
         }
 
@@ -334,7 +350,6 @@ namespace GameUtil
             Action<float> onUpdate = null, bool useRealTime = false, MonoBehaviour autoDestroyOwner = null)
         {
             //Check
-            if (onComplete == null && onUpdate == null) return null;
             if (duration <= 0)
             {
                 SafeCall(onUpdate, 0);
@@ -351,7 +366,6 @@ namespace GameUtil
             Action<float> onUpdate = null, MonoBehaviour autoDestroyOwner = null)
         {
             //Check
-            if (onComplete == null && onUpdate == null) return null;
             if (frame <= 0)
             {
                 SafeCall(onUpdate, 0);
@@ -364,30 +378,38 @@ namespace GameUtil
             return timer;
         }
 
-        private static LoopTimer LoopActionInternal(bool isPersistence, float interval, Action onComplete,
-            Action<float> onUpdate = null,
+        private static LoopTimer LoopActionInternal(bool isPersistence, float interval, Action onComplete, Action<float> onUpdate = null,
             bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null)
         {
-            if (onComplete == null && onUpdate == null) return null;
-            var timer = new LoopTimer(isPersistence, interval, onComplete, onUpdate, useRealTime, executeOnStart,
-                autoDestroyOwner);
+            var timer = new LoopTimer(isPersistence, interval, onComplete, onUpdate, useRealTime, executeOnStart, autoDestroyOwner);
             timer.Init();
             return timer;
         }
 
-        private static LoopTimer LoopActionInternal(bool isPersistence, float interval, int loopCount,
+        private static LoopUntilTimer LoopUntilActionInternal(bool isPersistence, float interval, Func<LoopUntilTimer, bool> loopUntil,
+            Action onComplete, Action<float> onUpdate = null, Action onFinished = null,
+            bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null)
+        {
+            var timer = new LoopUntilTimer(isPersistence, interval, loopUntil, onComplete, onUpdate,
+                onFinished, useRealTime, executeOnStart, autoDestroyOwner);
+            timer.Init();
+            return timer;
+        }
+        
+        private static LoopCountTimer LoopCountActionInternal(bool isPersistence, float interval, int loopCount,
             Action onComplete, Action<float> onUpdate = null, Action onFinished = null,
             bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null)
         {
             //Check
-            if (onComplete == null && onUpdate == null && onFinished == null) return null;
             if (loopCount <= 0)
             {
+                SafeCall(onUpdate, 0);
+                SafeCall(onComplete);
                 SafeCall(onFinished);
                 return null;
             }
 
-            var timer = new LoopTimer(isPersistence, interval, loopCount, onComplete, onUpdate,
+            var timer = new LoopCountTimer(isPersistence, interval, loopCount, onComplete, onUpdate,
                 onFinished, useRealTime, executeOnStart, autoDestroyOwner);
             timer.Init();
             return timer;
@@ -474,6 +496,7 @@ namespace GameUtil
             _startTime = GetWorldTime();
             _lastUpdateTime = _startTime;
             Register();
+            OnInit();
         }
 
         private void Register()
@@ -492,6 +515,10 @@ namespace GameUtil
         protected virtual float GetWorldTime()
         {
             return this.usesRealTime ? Time.realtimeSinceStartup : Time.time;
+        }
+
+        protected virtual void OnInit()
+        {
         }
 
         protected abstract void Update();
@@ -539,6 +566,34 @@ namespace GameUtil
             catch (Exception e)
             {
                 Debug.LogError(e);
+            }
+        }
+        
+        protected static TResult SafeCall<TResult>(Func<TResult> func)
+        {
+            if (func == null) return default;
+            try
+            {
+                return func();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+                return default;
+            }
+        }
+        
+        protected static TResult SafeCall<T, TResult>(Func<T, TResult> func, T arg)
+        {
+            if (func == null) return default;
+            try
+            {
+                return func(arg);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+                return default;
             }
         }
 

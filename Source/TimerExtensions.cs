@@ -23,10 +23,16 @@ public static class TimerExtensions
         return Timer.LoopAction(interval, onComplete, onUpdate, useRealTime, executeOnStart, behaviour);
     }
     
-    public static LoopTimer LoopAction(this MonoBehaviour behaviour, float interval, int count, Action onComplete, Action<float> onUpdate = null, Action onFinished = null,
+    public static LoopUntilTimer LoopUntilAction(this MonoBehaviour behaviour, float interval, Func<LoopUntilTimer, bool> loopUntil, Action onComplete, Action<float> onUpdate = null, Action onFinished = null,
         bool useRealTime = false, bool executeOnStart = false)
     {
-        return Timer.LoopAction(interval, count, onComplete, onUpdate, onFinished, useRealTime, executeOnStart, behaviour);
+        return Timer.LoopUntilAction(interval, loopUntil, onComplete, onUpdate, onFinished, useRealTime, executeOnStart, behaviour);
+    }
+    
+    public static LoopCountTimer LoopCountAction(this MonoBehaviour behaviour, float interval, int count, Action onComplete, Action<float> onUpdate = null, Action onFinished = null,
+        bool useRealTime = false, bool executeOnStart = false)
+    {
+        return Timer.LoopCountAction(interval, count, onComplete, onUpdate, onFinished, useRealTime, executeOnStart, behaviour);
     }
     
     //Persistence
@@ -46,9 +52,15 @@ public static class TimerExtensions
         return Timer.PersistenceLoopAction(interval, onComplete, onUpdate, useRealTime, executeOnStart, behaviour);
     }
     
-    public static LoopTimer PersistenceLoopAction(this MonoBehaviour behaviour, float interval, int count, Action onComplete, Action<float> onUpdate = null, Action onFinished = null,
+    public static LoopUntilTimer PersistenceLoopUntilAction(this MonoBehaviour behaviour, float interval, Func<LoopUntilTimer, bool> loopUntil, Action onComplete, Action<float> onUpdate = null, Action onFinished = null,
         bool useRealTime = false, bool executeOnStart = false)
     {
-        return Timer.PersistenceLoopAction(interval, count, onComplete, onUpdate, onFinished, useRealTime, executeOnStart, behaviour);
+        return Timer.PersistenceLoopUntilAction(interval, loopUntil, onComplete, onUpdate, onFinished, useRealTime, executeOnStart, behaviour);
+    }
+    
+    public static LoopCountTimer PersistenceLoopCountAction(this MonoBehaviour behaviour, float interval, int count, Action onComplete, Action<float> onUpdate = null, Action onFinished = null,
+        bool useRealTime = false, bool executeOnStart = false)
+    {
+        return Timer.PersistenceLoopCountAction(interval, count, onComplete, onUpdate, onFinished, useRealTime, executeOnStart, behaviour);
     }
 }

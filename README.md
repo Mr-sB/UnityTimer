@@ -18,7 +18,9 @@ public static DelayFrameTimer DelayFrameAction(int frame, Action onComplete, Act
 
 public static LoopTimer LoopAction(float interval, Action onComplete, Action<float> onUpdate = null,bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null);
         
-public static LoopTimer LoopAction(float interval, int count, Action onComplete, Action<float> onUpdate = null, Action onFinished = null, bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null);
+public static LoopUntilTimer LoopUntilAction(float interval, Func<LoopUntilTimer, bool> loopUntil, Action onComplete, Action<float> onUpdate = null, Action onFinished = null, bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null);
+
+public static LoopCountTimer LoopCountAction(float interval, int loopCount, Action onComplete, Action<float> onUpdate = null, Action onFinished = null, bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null);
 
 public static DelayTimer PersistenceDelayAction(float duration, Action onComplete, Action<float> onUpdate = null, bool useRealTime = false, MonoBehaviour autoDestroyOwner = null);
 
@@ -27,6 +29,10 @@ public static DelayFrameTimer PersistenceDelayFrameAction(int frame, Action onCo
 public static LoopTimer PersistenceLoopAction(float interval, Action onComplete, Action<float> onUpdate = null,bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null);
         
 public static LoopTimer PersistenceLoopAction(float interval, int count, Action onComplete, Action<float> onUpdate = null, Action onFinished = null, bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null);
+
+public static LoopUntilTimer PersistenceLoopUntilAction(float interval, Func<LoopUntilTimer, bool> loopUntil, Action onComplete, Action<float> onUpdate = null, Action onFinished = null, bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null);
+
+public static LoopCountTimer PersistenceLoopCountAction(float interval, int loopCount, Action onComplete, Action<float> onUpdate = null, Action onFinished = null, bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null);
 ```
 ## Motivation
 

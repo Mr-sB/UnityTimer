@@ -6,35 +6,34 @@ namespace GameUtil
     public class LoopTimer : Timer
     {
         private bool _executeOnStart;
-        private int? _loopCount;
-        private Action _onFinished;
-        private int _timer;
+        /// <summary>
+        /// How many times does the LoopTimer looped.
+        /// </summary>
+        public int loopTime { protected set; get; }
+        
+        protected virtual void OnComplete()
+        {
+        }
 
         public LoopTimer(bool isPersistence, float interval, Action onComplete,
             Action<float> onUpdate, bool usesRealTime, bool executeOnStart, MonoBehaviour autoDestroyOwner)
             : base(isPersistence, interval, onComplete, onUpdate, usesRealTime, autoDestroyOwner)
         {
             _executeOnStart = executeOnStart;
-            if (_executeOnStart)
-                OnComplete();
         }
 
-        public LoopTimer(bool isPersistence, float interval, int loopCount, Action onComplete,
-            Action<float> onUpdate, Action onFinished, bool usesRealTime, bool executeOnStart, MonoBehaviour autoDestroyOwner)
-            : base(isPersistence, interval, onComplete, onUpdate, usesRealTime, autoDestroyOwner)
+        protected override void OnInit()
         {
-            _executeOnStart = executeOnStart;
-            _loopCount = loopCount;
-            _onFinished = onFinished;
+            //avoid virtual member call in constructor
             if (_executeOnStart)
-                OnComplete();
+                Complete();
         }
 
         protected override void OnRestart()
         {
-            _timer = 0;
+            loopTime = 0;
             if (_executeOnStart)
-                OnComplete();
+                Complete();
         }
 
         protected override void Update()
@@ -47,47 +46,24 @@ namespace GameUtil
             var timeDifference = GetWorldTime() - GetFireTime();
             if (timeDifference >= 0)
             {
-                OnComplete();
+                Complete();
                 if (!isCompleted)
                     _startTime = GetWorldTime() - timeDifference; //Avoid time error accumulation
             }
         }
 
-        private void OnComplete()
+        private void Complete()
         {
-            if (_loopCount.HasValue)
-            {
-                _timer++;
-                SafeCall(_onComplete);
-                if (_timer >= _loopCount.Value)
-                {
-                    isCompleted = true;
-                    SafeCall(_onFinished);
-                }
-            }
-            else
-                SafeCall(_onComplete);
+            loopTime++;
+            SafeCall(_onComplete);
+            OnComplete();
         }
 
         public void Restart(float newInterval, Action newOnComplete, Action<float> newOnUpdate, bool newUsesRealTime, bool newExecuteOnStart)
         {
             duration = newInterval;
-            _loopCount = null;
             _onComplete = newOnComplete;
             _onUpdate = newOnUpdate;
-            _onFinished = null;
-            usesRealTime = newUsesRealTime;
-            _executeOnStart = newExecuteOnStart;
-            Restart();
-        }
-        
-        public void Restart(float newInterval, int newLoopCount, Action newOnComplete, Action<float> newOnUpdate, Action newOnFinished, bool newUsesRealTime, bool newExecuteOnStart)
-        {
-            duration = newInterval;
-            _loopCount = newLoopCount;
-            _onComplete = newOnComplete;
-            _onUpdate = newOnUpdate;
-            _onFinished = newOnFinished;
             usesRealTime = newUsesRealTime;
             _executeOnStart = newExecuteOnStart;
             Restart();

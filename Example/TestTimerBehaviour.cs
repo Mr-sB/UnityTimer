@@ -9,7 +9,9 @@ namespace UnityTimer.Examples
     {
         #region Unity Inspector Fields
 
-        [Header("Controls")] public InputField DurationField;
+        [Header("Controls")]
+        public InputField DurationField;
+        public InputField LoopCountField;
 
         public Button StartTimerButton;
         public Button CancelTimerButton;
@@ -44,6 +46,8 @@ namespace UnityTimer.Examples
         private void Awake()
         {
             RestartTimerButton.interactable = false;
+            IsLoopedToggle.onValueChanged.AddListener(OnLoopToggleChanged);
+            OnLoopToggleChanged(IsLoopedToggle.isOn);
             ResetState();
         }
 
@@ -59,11 +63,18 @@ namespace UnityTimer.Examples
 
             // this is the important code example bit where we register a new timer
             if (IsLoopedToggle.isOn)
-                _testTimer = this.LoopAction(GetDurationValue(), () => _numLoops++,
-                    secondsElapsed =>
-                    {
-                        UpdateText.text = string.Format("Timer ran update callback: {0:F2} seconds", secondsElapsed);
-                    }, !UseGameTimeToggle.isOn);
+            {
+                int loopCount = GetLoopCount();
+                if (loopCount >= 0)
+                    _testTimer = this.LoopCountAction(GetDurationValue(), loopCount, () => _numLoops++,
+                        secondsElapsed => { UpdateText.text = string.Format("Timer ran update callback: {0:F2} seconds", secondsElapsed); },
+                        () => { UpdateText.text = string.Format("LoopCountTimer finished! LoopTime:{0}", ((LoopCountTimer) _testTimer)?.loopTime ?? 0); },
+                        !UseGameTimeToggle.isOn);
+                else
+                    _testTimer = this.LoopAction(GetDurationValue(), () => _numLoops++,
+                        secondsElapsed => { UpdateText.text = string.Format("Timer ran update callback: {0:F2} seconds", secondsElapsed); },
+                        !UseGameTimeToggle.isOn);
+            }
             else
                 _testTimer = this.DelayAction(GetDurationValue(), () => _numLoops++,
                     secondsElapsed =>
@@ -127,7 +138,7 @@ namespace UnityTimer.Examples
         private bool ShouldShowRestartText()
         {
             var timerType = _testTimer.GetType();
-            return IsLoopedToggle.isOn != (timerType == typeof(LoopTimer)) || // we switched timer type or
+            return IsLoopedToggle.isOn != typeof(LoopTimer).IsAssignableFrom(timerType) || // we switched timer type or
                     UseGameTimeToggle.isOn == _testTimer.usesRealTime || // we switched usesRealTime or
                     Mathf.Abs(GetDurationValue() - _testTimer.duration) >= Mathf.Epsilon; // our duration changed
         }
@@ -136,6 +147,17 @@ namespace UnityTimer.Examples
         {
             float duration;
             return float.TryParse(DurationField.text, out duration) ? duration : 0;
+        }
+
+        private int GetLoopCount()
+        {
+            int loopCount;
+            return int.TryParse(LoopCountField.text, out loopCount) ? loopCount : 0;
+        }
+
+        private void OnLoopToggleChanged(bool isOn)
+        {
+            LoopCountField.transform.parent.gameObject.SetActive(isOn);
         }
     }
 }
