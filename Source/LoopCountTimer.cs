@@ -26,6 +26,17 @@ namespace GameUtil
             return loopTime >= _loopCount;
         }
 
+        public void Restart(float newInterval, int newLoopCount)
+        {
+            _loopCount = newLoopCount;
+            base.Restart(newInterval);
+        }
+        
+        public override void Restart(float newInterval, Func<LoopUntilTimer, bool> newLoopUntil)
+        {
+            base.Restart(newInterval, LoopCountUntil);
+        }
+        
         public override void Restart(float newInterval, Func<LoopUntilTimer, bool> newLoopUntil, Action newOnComplete, Action<float> newOnUpdate, Action newOnFinished, bool newUsesRealTime, bool newExecuteOnStart)
         {
             base.Restart(newInterval, LoopCountUntil, newOnComplete, newOnUpdate, newOnFinished, newUsesRealTime, newExecuteOnStart);
@@ -34,7 +45,7 @@ namespace GameUtil
         public void Restart(float newInterval, int newLoopCount, Action newOnComplete, Action<float> newOnUpdate, Action newOnFinished, bool newUsesRealTime, bool newExecuteOnStart)
         {
             _loopCount = newLoopCount;
-            base.Restart(newInterval, LoopCountUntil, newOnComplete, newOnUpdate, newOnFinished, newUsesRealTime, newExecuteOnStart);
+            Restart(newInterval, LoopCountUntil, newOnComplete, newOnUpdate, newOnFinished, newUsesRealTime, newExecuteOnStart);
         }
     }
 }

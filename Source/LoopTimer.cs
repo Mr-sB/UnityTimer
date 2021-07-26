@@ -59,6 +59,12 @@ namespace GameUtil
             OnComplete();
         }
 
+        public void Restart(float newInterval)
+        {
+            duration = newInterval;
+            Restart();
+        }
+        
         public void Restart(float newInterval, Action newOnComplete, Action<float> newOnUpdate, bool newUsesRealTime, bool newExecuteOnStart)
         {
             duration = newInterval;

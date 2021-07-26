@@ -24,6 +24,12 @@ namespace GameUtil
             SafeCall(_onFinished);
         }
 
+        public virtual void Restart(float newInterval, Func<LoopUntilTimer, bool> newLoopUntil)
+        {
+            _loopUntilFunc = newLoopUntil;
+            Restart(newInterval);
+        }
+        
         public virtual void Restart(float newInterval, Func<LoopUntilTimer, bool> newLoopUntil, Action newOnComplete, Action<float> newOnUpdate, Action newOnFinished, bool newUsesRealTime, bool newExecuteOnStart)
         {
             _loopUntilFunc = newLoopUntil;
