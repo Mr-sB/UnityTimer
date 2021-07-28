@@ -15,7 +15,7 @@ namespace GameUtil
             _loopUntilFunc = LoopCountUntil;
         }
 
-        private bool LoopCountUntil(LoopTimer timer)
+        private bool LoopCountUntil(LoopUntilTimer timer)
         {
             return loopTime >= _loopCount;
         }
