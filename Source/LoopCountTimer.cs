@@ -12,13 +12,7 @@ namespace GameUtil
             : base(isPersistence, interval, null, onComplete, onUpdate, onFinished, usesRealTime, executeOnStart, autoDestroyOwner)
         {
             _loopCount = loopCount;
-        }
-
-        protected override void OnInit()
-        {
-            //Cannot access non-static method "LoopCountUntil" in static context ".Ctor"
             _loopUntilFunc = LoopCountUntil;
-            base.OnInit();
         }
 
         private bool LoopCountUntil(LoopTimer timer)
