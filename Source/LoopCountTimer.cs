@@ -26,12 +26,14 @@ namespace GameUtil
             base.Restart(newInterval);
         }
         
-        public override void Restart(float newInterval, Func<LoopUntilTimer, bool> newLoopUntil)
+        //Avoid _loopUntilFunc reassignment
+        public sealed override void Restart(float newInterval, Func<LoopUntilTimer, bool> newLoopUntil)
         {
             base.Restart(newInterval, LoopCountUntil);
         }
         
-        public override void Restart(float newInterval, Func<LoopUntilTimer, bool> newLoopUntil, Action newOnComplete, Action<float> newOnUpdate, Action newOnFinished, bool newUsesRealTime, bool newExecuteOnStart)
+        //Avoid _loopUntilFunc reassignment
+        public sealed override void Restart(float newInterval, Func<LoopUntilTimer, bool> newLoopUntil, Action newOnComplete, Action<float> newOnUpdate, Action newOnFinished, bool newUsesRealTime, bool newExecuteOnStart)
         {
             base.Restart(newInterval, LoopCountUntil, newOnComplete, newOnUpdate, newOnFinished, newUsesRealTime, newExecuteOnStart);
         }
