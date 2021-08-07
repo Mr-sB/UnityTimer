@@ -16,7 +16,7 @@ public static DelayTimer DelayAction(float duration, Action onComplete, Action<f
 
 public static DelayFrameTimer DelayFrameAction(int frame, Action onComplete, Action<float> onUpdate = null, MonoBehaviour autoDestroyOwner = null);
 
-public static LoopTimer LoopAction(float interval, Action onComplete, Action<float> onUpdate = null,bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null);
+public static LoopTimer LoopAction(float interval, Action onComplete, Action<float> onUpdate = null, bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null);
         
 public static LoopUntilTimer LoopUntilAction(float interval, Func<LoopUntilTimer, bool> loopUntil, Action onComplete, Action<float> onUpdate = null, Action onFinished = null, bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null);
 
@@ -26,9 +26,7 @@ public static DelayTimer PersistenceDelayAction(float duration, Action onComplet
 
 public static DelayFrameTimer PersistenceDelayFrameAction(int frame, Action onComplete, Action<float> onUpdate = null, MonoBehaviour autoDestroyOwner = null);
 
-public static LoopTimer PersistenceLoopAction(float interval, Action onComplete, Action<float> onUpdate = null,bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null);
-        
-public static LoopTimer PersistenceLoopAction(float interval, int count, Action onComplete, Action<float> onUpdate = null, Action onFinished = null, bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null);
+public static LoopTimer PersistenceLoopAction(float interval, Action onComplete, Action<float> onUpdate = null, bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null);
 
 public static LoopUntilTimer PersistenceLoopUntilAction(float interval, Func<LoopUntilTimer, bool> loopUntil, Action onComplete, Action<float> onUpdate = null, Action onFinished = null, bool useRealTime = false, bool executeOnStart = false, MonoBehaviour autoDestroyOwner = null);
 
