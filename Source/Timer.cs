@@ -58,6 +58,22 @@ namespace GameUtil
             get { return this.isCompleted || this.isCancelled || this.isOwnerDestroyed; }
         }
 
+        // after the auto destroy owner is destroyed, the timer will expire
+        // this way you don't run into any annoying bugs with timers running and accessing objects
+        // after they have been destroyed
+        public Object autoDestroyOwner { get; }
+        public bool hasAutoDestroyOwner { get; }
+        private bool isOwnerDestroyed
+        {
+            get
+            {
+                if (!hasAutoDestroyOwner || autoDestroyOwner) return false;
+                if (!_timeElapsedBeforeAutoDestroy.HasValue)
+                    _timeElapsedBeforeAutoDestroy = GetTimeElapsed();
+                return true;
+            }
+        }
+        
         #endregion
 
         #region Public Static Methods
@@ -436,17 +452,7 @@ namespace GameUtil
         #endregion
 
         #region Private/Protected Properties/Fields
-
-        private bool isOwnerDestroyed
-        {
-            get
-            {
-                if (!_hasAutoDestroyOwner || _autoDestroyOwner) return false;
-                if (!_timeElapsedBeforeAutoDestroy.HasValue)
-                    _timeElapsedBeforeAutoDestroy = GetTimeElapsed();
-                return true;
-            }
-        }
+        
 
         // whether the timer is in TimeManager
         private bool _isInManager;
@@ -463,12 +469,6 @@ namespace GameUtil
         private float? _timeElapsedBeforeCancel;
         private float? _timeElapsedBeforePause;
         private float? _timeElapsedBeforeAutoDestroy;
-
-        // after the auto destroy owner is destroyed, the timer will expire
-        // this way you don't run into any annoying bugs with timers running and accessing objects
-        // after they have been destroyed
-        private readonly Object _autoDestroyOwner;
-        private readonly bool _hasAutoDestroyOwner;
 
         private readonly LinkedListNode<Timer> _linkedListNode;
 
@@ -491,8 +491,8 @@ namespace GameUtil
 
             this.usesRealTime = usesRealTime;
 
-            this._autoDestroyOwner = autoDestroyOwner;
-            this._hasAutoDestroyOwner = autoDestroyOwner != null;
+            this.autoDestroyOwner = autoDestroyOwner;
+            this.hasAutoDestroyOwner = autoDestroyOwner != null;
 
             _linkedListNode = new LinkedListNode<Timer>(this);
         }
@@ -649,11 +649,12 @@ namespace GameUtil
 
             public void CancelAllTimersByOwner(Object owner)
             {
+                if (!owner) return;
                 var node = _timers.First;
                 while (node != null)
                 {
                     var timer = node.Value;
-                    if (timer._autoDestroyOwner == owner)
+                    if (timer.autoDestroyOwner == owner)
                     {
                         timer.Cancel();
                         timer._isInManager = false;
@@ -669,6 +670,7 @@ namespace GameUtil
                 for (int i = _timersToAdd.Count - 1; i >= 0; i--)
                 {
                     var timer = _timersToAdd[i];
+                    if (timer.autoDestroyOwner != owner) continue;
                     timer.Cancel();
                     timer._isInManager = false;
                     //remove

@@ -63,4 +63,9 @@ public static class TimerExtensions
     {
         return Timer.PersistenceLoopCountAction(interval, count, onComplete, onUpdate, onFinished, useRealTime, executeOnStart, behaviour);
     }
+    
+    public static void CancelAllTimer(this Component behaviour)
+    {
+        Timer.CancelAllRegisteredTimersByOwner(behaviour);
+    }
 }
