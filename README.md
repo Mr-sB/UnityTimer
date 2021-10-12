@@ -139,6 +139,7 @@ Timer.DelayAction(transitionDuration,
 - `timer.GetRatioComplete()`
 - `timer.isDone`
 - `Timer.CancelAllRegisteredTimers()`
+- `Timer.CancelAllRegisteredTimersByOwner(owner)`
 - `Timer.PauseAllRegisteredTimers()`
 - `Timer.ResumeAllRegisteredTimers()`
 

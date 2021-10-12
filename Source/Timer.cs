@@ -185,6 +185,17 @@ namespace GameUtil
             }
         }
 
+        public static void CancelAllRegisteredTimersByOwner(Object owner)
+        {
+            if (_manager != null)
+            {
+                _manager.CancelAllTimersByOwner(owner);
+            }
+
+            // if the manager doesn't exist, we don't have any registered timers yet, so don't
+            // need to do anything in this case
+        }
+        
         public static void CancelAllRegisteredTimers()
         {
             if (_manager != null)
@@ -634,6 +645,35 @@ namespace GameUtil
 
                 _timers.Clear();
                 _timersToAdd.Clear();
+            }
+
+            public void CancelAllTimersByOwner(Object owner)
+            {
+                var node = _timers.First;
+                while (node != null)
+                {
+                    var timer = node.Value;
+                    if (timer._autoDestroyOwner == owner)
+                    {
+                        timer.Cancel();
+                        timer._isInManager = false;
+                        var toRemoveNode = node;
+                        node = node.Next;
+                        //remove
+                        _timers.Remove(toRemoveNode);
+                    }
+                    else
+                        node = node.Next;
+                }
+
+                for (int i = _timersToAdd.Count - 1; i >= 0; i--)
+                {
+                    var timer = _timersToAdd[i];
+                    timer.Cancel();
+                    timer._isInManager = false;
+                    //remove
+                    _timersToAdd.RemoveAt(i);
+                }
             }
 
             public void PauseAllTimers()
