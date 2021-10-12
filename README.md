@@ -12,25 +12,25 @@ Fork by GH-ZJ(wustzhangjie@gmail.com)
 
 The Unity Timer package provides the following method for creating timers:
 ```c#
-public static DelayTimer DelayAction(float duration, Action onComplete, Action<float> onUpdate = null, bool useRealTime = false, Component autoDestroyOwner = null);
+public static DelayTimer DelayAction(float duration, Action onComplete, Action<float> onUpdate = null, bool useRealTime = false, Object autoDestroyOwner = null);
 
-public static DelayFrameTimer DelayFrameAction(int frame, Action onComplete, Action<float> onUpdate = null, Component autoDestroyOwner = null);
+public static DelayFrameTimer DelayFrameAction(int frame, Action onComplete, Action<float> onUpdate = null, Object autoDestroyOwner = null);
 
-public static LoopTimer LoopAction(float interval, Action onComplete, Action<float> onUpdate = null, bool useRealTime = false, bool executeOnStart = false, Component autoDestroyOwner = null);
+public static LoopTimer LoopAction(float interval, Action onComplete, Action<float> onUpdate = null, bool useRealTime = false, bool executeOnStart = false, Object autoDestroyOwner = null);
         
-public static LoopUntilTimer LoopUntilAction(float interval, Func<LoopUntilTimer, bool> loopUntil, Action onComplete, Action<float> onUpdate = null, Action onFinished = null, bool useRealTime = false, bool executeOnStart = false, Component autoDestroyOwner = null);
+public static LoopUntilTimer LoopUntilAction(float interval, Func<LoopUntilTimer, bool> loopUntil, Action onComplete, Action<float> onUpdate = null, Action onFinished = null, bool useRealTime = false, bool executeOnStart = false, Object autoDestroyOwner = null);
 
-public static LoopCountTimer LoopCountAction(float interval, int loopCount, Action onComplete, Action<float> onUpdate = null, Action onFinished = null, bool useRealTime = false, bool executeOnStart = false, Component autoDestroyOwner = null);
+public static LoopCountTimer LoopCountAction(float interval, int loopCount, Action onComplete, Action<float> onUpdate = null, Action onFinished = null, bool useRealTime = false, bool executeOnStart = false, Object autoDestroyOwner = null);
 
-public static DelayTimer PersistenceDelayAction(float duration, Action onComplete, Action<float> onUpdate = null, bool useRealTime = false, Component autoDestroyOwner = null);
+public static DelayTimer PersistenceDelayAction(float duration, Action onComplete, Action<float> onUpdate = null, bool useRealTime = false, Object autoDestroyOwner = null);
 
-public static DelayFrameTimer PersistenceDelayFrameAction(int frame, Action onComplete, Action<float> onUpdate = null, Component autoDestroyOwner = null);
+public static DelayFrameTimer PersistenceDelayFrameAction(int frame, Action onComplete, Action<float> onUpdate = null, Object autoDestroyOwner = null);
 
-public static LoopTimer PersistenceLoopAction(float interval, Action onComplete, Action<float> onUpdate = null, bool useRealTime = false, bool executeOnStart = false, Component autoDestroyOwner = null);
+public static LoopTimer PersistenceLoopAction(float interval, Action onComplete, Action<float> onUpdate = null, bool useRealTime = false, bool executeOnStart = false, Object autoDestroyOwner = null);
 
-public static LoopUntilTimer PersistenceLoopUntilAction(float interval, Func<LoopUntilTimer, bool> loopUntil, Action onComplete, Action<float> onUpdate = null, Action onFinished = null, bool useRealTime = false, bool executeOnStart = false, Component autoDestroyOwner = null);
+public static LoopUntilTimer PersistenceLoopUntilAction(float interval, Func<LoopUntilTimer, bool> loopUntil, Action onComplete, Action<float> onUpdate = null, Action onFinished = null, bool useRealTime = false, bool executeOnStart = false, Object autoDestroyOwner = null);
 
-public static LoopCountTimer PersistenceLoopCountAction(float interval, int loopCount, Action onComplete, Action<float> onUpdate = null, Action onFinished = null, bool useRealTime = false, bool executeOnStart = false, Component autoDestroyOwner = null);
+public static LoopCountTimer PersistenceLoopCountAction(float interval, int loopCount, Action onComplete, Action<float> onUpdate = null, Action onFinished = null, bool useRealTime = false, bool executeOnStart = false, Object autoDestroyOwner = null);
 ```
 ## Motivation
 
@@ -94,9 +94,9 @@ void Update() {
 }
 ```
 
-* Attach the timer to a Component by setting `autoDestroyOwner` to the Component, so that the timer is destroyed when the Component is.
+* Attach the timer to a UnityEngine.Object by setting `autoDestroyOwner` to the UnityEngine.Object, so that the timer is destroyed when the UnityEngine.Object is.
 
-Very often, a timer called from a Component will manipulate that behaviour's state. Thus, it is common practice to cancel the timer in the OnDestroy method of the Component. We've added a convenient extension method that attaches a Timer to a Component such that it will automatically cancel the timer when the Component is detected as null.
+Very often, a timer called from a Component will manipulate that component's state. Thus, it is common practice to cancel the timer in the OnDestroy method of the Component. We've added a convenient extension method that attaches a Timer to a Component such that it will automatically cancel the timer when the Component is detected as null.
 ```c#
 public class CoolMonoBehaviour : MonoBehaviour {
 
