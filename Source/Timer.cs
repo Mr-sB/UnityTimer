@@ -650,31 +650,37 @@ namespace GameUtil
             public void CancelAllTimersByOwner(Object owner)
             {
                 if (!owner) return;
-                var node = _timers.First;
+                CancelAllTimersByOwner(_timers, _timersToAdd, owner);
+                CancelAllTimersByOwner(_persistenceTimers, _persistenceTimersToAdd, owner);
+            }
+
+            private void CancelAllTimersByOwner(LinkedList<Timer> timers, List<Timer> timersToAdd, Object owner)
+            {
+                var node = timers.First;
                 while (node != null)
                 {
                     var timer = node.Value;
-                    if (timer.autoDestroyOwner == owner)
+                    if (!timer.isDone && timer.autoDestroyOwner == owner)
                     {
                         timer.Cancel();
                         timer._isInManager = false;
                         var toRemoveNode = node;
                         node = node.Next;
                         //remove
-                        _timers.Remove(toRemoveNode);
+                        timers.Remove(toRemoveNode);
                     }
                     else
                         node = node.Next;
                 }
 
-                for (int i = _timersToAdd.Count - 1; i >= 0; i--)
+                for (int i = timersToAdd.Count - 1; i >= 0; i--)
                 {
-                    var timer = _timersToAdd[i];
-                    if (timer.autoDestroyOwner != owner) continue;
+                    var timer = timersToAdd[i];
+                    if (!timer.isDone && timer.autoDestroyOwner != owner) continue;
                     timer.Cancel();
                     timer._isInManager = false;
                     //remove
-                    _timersToAdd.RemoveAt(i);
+                    timersToAdd.RemoveAt(i);
                 }
             }
 
