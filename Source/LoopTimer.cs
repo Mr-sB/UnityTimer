@@ -6,11 +6,12 @@ namespace GameUtil
     public class LoopTimer : Timer
     {
         private bool _executeOnStart;
+
         /// <summary>
         /// How many times does the LoopTimer looped.
         /// </summary>
         public int loopTime { protected set; get; }
-        
+
         protected virtual void OnComplete()
         {
         }
@@ -44,11 +45,14 @@ namespace GameUtil
                 SafeCall(_onUpdate, GetTimeElapsed());
 
             var timeDifference = GetWorldTime() - GetFireTime();
-            if (timeDifference >= 0)
+            //Loop call until cannot fire
+            while (timeDifference >= 0)
             {
                 Complete();
-                if (!isCompleted)
-                    _startTime = GetWorldTime() - timeDifference; //Avoid time error accumulation
+                if (isCompleted)
+                    break;
+                _startTime = GetWorldTime() - timeDifference; //Avoid time error accumulation
+                timeDifference = GetWorldTime() - GetFireTime();
             }
         }
 
@@ -64,7 +68,7 @@ namespace GameUtil
             duration = newInterval;
             Restart();
         }
-        
+
         public void Restart(float newInterval, Action newOnComplete, Action<float> newOnUpdate, bool newUsesRealTime, bool newExecuteOnStart)
         {
             duration = newInterval;
