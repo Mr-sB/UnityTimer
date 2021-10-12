@@ -1,12 +1,11 @@
 using System;
-using UnityEngine;
 
 namespace GameUtil
 {
     public class DelayTimer : Timer
     {
         public DelayTimer(bool isPersistence, float duration, Action onComplete, Action<float> onUpdate,
-            bool usesRealTime, MonoBehaviour autoDestroyOwner)
+            bool usesRealTime, UnityEngine.Object autoDestroyOwner)
             : base(isPersistence, duration, onComplete, onUpdate, usesRealTime, autoDestroyOwner)
         {
         }

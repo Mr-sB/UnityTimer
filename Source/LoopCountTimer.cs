@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 
 namespace GameUtil
 {
@@ -8,7 +7,7 @@ namespace GameUtil
         private int _loopCount;
 
         public LoopCountTimer(bool isPersistence, float interval, int loopCount, Action onComplete,
-            Action<float> onUpdate, Action onFinished, bool usesRealTime, bool executeOnStart, MonoBehaviour autoDestroyOwner)
+            Action<float> onUpdate, Action onFinished, bool usesRealTime, bool executeOnStart, UnityEngine.Object autoDestroyOwner)
             : base(isPersistence, interval, null, onComplete, onUpdate, onFinished, usesRealTime, executeOnStart, autoDestroyOwner)
         {
             _loopCount = loopCount;

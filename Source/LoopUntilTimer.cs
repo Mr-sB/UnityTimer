@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 
 namespace GameUtil
 {
@@ -9,7 +8,7 @@ namespace GameUtil
         private Action _onFinished;
 
         public LoopUntilTimer(bool isPersistence, float interval, Func<LoopUntilTimer, bool> loopUntil, Action onComplete,
-            Action<float> onUpdate, Action onFinished, bool usesRealTime, bool executeOnStart, MonoBehaviour autoDestroyOwner)
+            Action<float> onUpdate, Action onFinished, bool usesRealTime, bool executeOnStart, UnityEngine.Object autoDestroyOwner)
             : base(isPersistence, interval, onComplete, onUpdate, usesRealTime, executeOnStart, autoDestroyOwner)
         {
             _loopUntilFunc = loopUntil;

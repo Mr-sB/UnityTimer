@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 
 namespace GameUtil
 {
@@ -17,7 +16,7 @@ namespace GameUtil
         }
 
         public LoopTimer(bool isPersistence, float interval, Action onComplete,
-            Action<float> onUpdate, bool usesRealTime, bool executeOnStart, MonoBehaviour autoDestroyOwner)
+            Action<float> onUpdate, bool usesRealTime, bool executeOnStart, UnityEngine.Object autoDestroyOwner)
             : base(isPersistence, interval, onComplete, onUpdate, usesRealTime, autoDestroyOwner)
         {
             _executeOnStart = executeOnStart;
