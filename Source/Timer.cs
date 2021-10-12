@@ -653,37 +653,7 @@ namespace GameUtil
                 CancelAllTimersByOwner(_timers, _timersToAdd, owner);
                 CancelAllTimersByOwner(_persistenceTimers, _persistenceTimersToAdd, owner);
             }
-
-            private void CancelAllTimersByOwner(LinkedList<Timer> timers, List<Timer> timersToAdd, Object owner)
-            {
-                var node = timers.First;
-                while (node != null)
-                {
-                    var timer = node.Value;
-                    if (!timer.isDone && timer.autoDestroyOwner == owner)
-                    {
-                        timer.Cancel();
-                        timer._isInManager = false;
-                        var toRemoveNode = node;
-                        node = node.Next;
-                        //remove
-                        timers.Remove(toRemoveNode);
-                    }
-                    else
-                        node = node.Next;
-                }
-
-                for (int i = timersToAdd.Count - 1; i >= 0; i--)
-                {
-                    var timer = timersToAdd[i];
-                    if (!timer.isDone && timer.autoDestroyOwner != owner) continue;
-                    timer.Cancel();
-                    timer._isInManager = false;
-                    //remove
-                    timersToAdd.RemoveAt(i);
-                }
-            }
-
+            
             public void PauseAllTimers()
             {
                 foreach (Timer timer in _timers)
@@ -762,6 +732,36 @@ namespace GameUtil
                     }
                     else
                         node = node.Next;
+                }
+            }
+            
+            private static void CancelAllTimersByOwner(LinkedList<Timer> timers, List<Timer> timersToAdd, Object owner)
+            {
+                var node = timers.First;
+                while (node != null)
+                {
+                    var timer = node.Value;
+                    if (!timer.isDone && timer.autoDestroyOwner == owner)
+                    {
+                        timer.Cancel();
+                        timer._isInManager = false;
+                        var toRemoveNode = node;
+                        node = node.Next;
+                        //remove
+                        timers.Remove(toRemoveNode);
+                    }
+                    else
+                        node = node.Next;
+                }
+
+                for (int i = timersToAdd.Count - 1; i >= 0; i--)
+                {
+                    var timer = timersToAdd[i];
+                    if (!timer.isDone && timer.autoDestroyOwner != owner) continue;
+                    timer.Cancel();
+                    timer._isInManager = false;
+                    //remove
+                    timersToAdd.RemoveAt(i);
                 }
             }
         }

@@ -48,7 +48,7 @@ namespace GameUtil
             while (timeDifference >= 0)
             {
                 Complete();
-                if (isCompleted)
+                if (isDone)
                     break;
                 _startTime = GetWorldTime() - timeDifference; //Avoid time error accumulation
                 timeDifference = GetWorldTime() - GetFireTime();
