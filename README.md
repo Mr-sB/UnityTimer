@@ -163,7 +163,7 @@ void Update() {
 }
 ```
 
-* All timer generator functions can shortcut call by using Component Extensions functions, and the timer will attach to the Component so that the timer is destroyed when the Component is.
+* All timer generator functions can shortcut call by using Component/GameObject Extensions functions, and the timer will attach to the Component/GameObject so that the timer is destroyed when the Component/GameObject is.
 ```c#
 void Start() {
    //The timer will attach to the Component instance.
