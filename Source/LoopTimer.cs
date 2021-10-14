@@ -8,7 +8,7 @@ namespace GameUtil
         /// Parameter is loopTime.
         /// </summary>
         protected Action<int> _onComplete;
-        private bool _executeOnStart;
+        public bool executeOnStart { protected set; get; }
 
         [Obsolete("Use loopTimes instead.")]
         public int loopTime => loopTimes;
@@ -26,20 +26,20 @@ namespace GameUtil
             : base(isPersistence, interval, onUpdate, usesRealTime, autoDestroyOwner)
         {
             _onComplete = onComplete;
-            _executeOnStart = executeOnStart;
+            this.executeOnStart = executeOnStart;
         }
 
         protected override void OnInit()
         {
             //avoid virtual member call in constructor
-            if (_executeOnStart)
+            if (executeOnStart)
                 Complete();
         }
 
         protected override void OnRestart()
         {
             loopTimes = 0;
-            if (_executeOnStart)
+            if (executeOnStart)
                 Complete();
         }
 
@@ -81,7 +81,7 @@ namespace GameUtil
             _onComplete = newOnComplete;
             _onUpdate = newOnUpdate;
             usesRealTime = newUsesRealTime;
-            _executeOnStart = newExecuteOnStart;
+            executeOnStart = newExecuteOnStart;
             Restart();
         }
     }
