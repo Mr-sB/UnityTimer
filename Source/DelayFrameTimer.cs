@@ -5,6 +5,8 @@ namespace GameUtil
 {
     public class DelayFrameTimer : Timer
     {
+        protected Action _onComplete;
+
         protected override float GetWorldTime()
         {
             return Time.frameCount;
@@ -12,8 +14,9 @@ namespace GameUtil
 
         public DelayFrameTimer(bool isPersistence, int frame, Action onComplete, Action<float> onUpdate,
             UnityEngine.Object autoDestroyOwner)
-            : base(isPersistence, frame, onComplete, onUpdate, true, autoDestroyOwner)
+            : base(isPersistence, frame, onUpdate, true, autoDestroyOwner)
         {
+            _onComplete = onComplete;
         }
 
         protected override void Update()

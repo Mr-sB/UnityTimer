@@ -66,12 +66,12 @@ namespace UnityTimer.Examples
             {
                 int loopCount = GetLoopCount();
                 if (loopCount >= 0)
-                    _testTimer = this.LoopCountAction(GetDurationValue(), loopCount, () => _numLoops++,
+                    _testTimer = this.LoopCountAction(GetDurationValue(), loopCount, loopTime => _numLoops = loopTime,
                         secondsElapsed => { UpdateText.text = string.Format("Timer ran update callback: {0:F2} seconds", secondsElapsed); },
-                        () => { UpdateText.text = string.Format("LoopCountTimer finished! LoopTime:{0}", ((LoopCountTimer) _testTimer)?.loopTime ?? 0); },
+                        () => { UpdateText.text = string.Format("LoopCountTimer finished! LoopTimes:{0}", ((LoopTimer) _testTimer)?.loopTimes ?? 0); },
                         !UseGameTimeToggle.isOn);
                 else
-                    _testTimer = this.LoopAction(GetDurationValue(), () => _numLoops++,
+                    _testTimer = this.LoopAction(GetDurationValue(), loopTime => _numLoops = loopTime,
                         secondsElapsed => { UpdateText.text = string.Format("Timer ran update callback: {0:F2} seconds", secondsElapsed); },
                         !UseGameTimeToggle.isOn);
             }

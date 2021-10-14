@@ -90,14 +90,14 @@ namespace GameUtil
             return DelayFrameActionInternal(false, frame, onComplete, onUpdate, autoDestroyOwner);
         }
 
-        public static LoopTimer LoopAction(float interval, Action onComplete, Action<float> onUpdate = null,
+        public static LoopTimer LoopAction(float interval, Action<int> onComplete, Action<float> onUpdate = null,
             bool useRealTime = false, bool executeOnStart = false, Object autoDestroyOwner = null)
         {
             return LoopActionInternal(false, interval, onComplete, onUpdate, useRealTime, executeOnStart,
                 autoDestroyOwner);
         }
         
-        public static LoopUntilTimer LoopUntilAction(float interval, Func<LoopUntilTimer, bool> loopUntil, Action onComplete,
+        public static LoopUntilTimer LoopUntilAction(float interval, Func<LoopUntilTimer, bool> loopUntil, Action<int> onComplete,
             Action<float> onUpdate = null, Action onFinished = null,
             bool useRealTime = false, bool executeOnStart = false, Object autoDestroyOwner = null)
         {
@@ -105,7 +105,7 @@ namespace GameUtil
                 executeOnStart, autoDestroyOwner);
         }
 
-        public static LoopCountTimer LoopCountAction(float interval, int loopCount, Action onComplete,
+        public static LoopCountTimer LoopCountAction(float interval, int loopCount, Action<int> onComplete,
             Action<float> onUpdate = null, Action onFinished = null,
             bool useRealTime = false, bool executeOnStart = false, Object autoDestroyOwner = null)
         {
@@ -126,14 +126,14 @@ namespace GameUtil
             return DelayFrameActionInternal(true, frame, onComplete, onUpdate, autoDestroyOwner);
         }
 
-        public static LoopTimer PersistenceLoopAction(float interval, Action onComplete, Action<float> onUpdate = null,
+        public static LoopTimer PersistenceLoopAction(float interval, Action<int> onComplete, Action<float> onUpdate = null,
             bool useRealTime = false, bool executeOnStart = false, Object autoDestroyOwner = null)
         {
             return LoopActionInternal(true, interval, onComplete, onUpdate, useRealTime, executeOnStart,
                 autoDestroyOwner);
         }
 
-        public static LoopUntilTimer PersistenceLoopUntilAction(float interval, Func<LoopUntilTimer, bool> loopUntil, Action onComplete,
+        public static LoopUntilTimer PersistenceLoopUntilAction(float interval, Func<LoopUntilTimer, bool> loopUntil, Action<int> onComplete,
             Action<float> onUpdate = null, Action onFinished = null,
             bool useRealTime = false, bool executeOnStart = false, Object autoDestroyOwner = null)
         {
@@ -141,7 +141,7 @@ namespace GameUtil
                 executeOnStart, autoDestroyOwner);
         }
 
-        public static LoopCountTimer PersistenceLoopCountAction(float interval, int loopCount, Action onComplete,
+        public static LoopCountTimer PersistenceLoopCountAction(float interval, int loopCount, Action<int> onComplete,
             Action<float> onUpdate = null, Action onFinished = null,
             bool useRealTime = false, bool executeOnStart = false, Object autoDestroyOwner = null)
         {
@@ -405,7 +405,7 @@ namespace GameUtil
             return timer;
         }
 
-        private static LoopTimer LoopActionInternal(bool isPersistence, float interval, Action onComplete, Action<float> onUpdate = null,
+        private static LoopTimer LoopActionInternal(bool isPersistence, float interval, Action<int> onComplete, Action<float> onUpdate = null,
             bool useRealTime = false, bool executeOnStart = false, Object autoDestroyOwner = null)
         {
             var timer = new LoopTimer(isPersistence, interval, onComplete, onUpdate, useRealTime, executeOnStart, autoDestroyOwner);
@@ -414,7 +414,7 @@ namespace GameUtil
         }
 
         private static LoopUntilTimer LoopUntilActionInternal(bool isPersistence, float interval, Func<LoopUntilTimer, bool> loopUntil,
-            Action onComplete, Action<float> onUpdate = null, Action onFinished = null,
+            Action<int> onComplete, Action<float> onUpdate = null, Action onFinished = null,
             bool useRealTime = false, bool executeOnStart = false, Object autoDestroyOwner = null)
         {
             var timer = new LoopUntilTimer(isPersistence, interval, loopUntil, onComplete, onUpdate,
@@ -424,14 +424,14 @@ namespace GameUtil
         }
         
         private static LoopCountTimer LoopCountActionInternal(bool isPersistence, float interval, int loopCount,
-            Action onComplete, Action<float> onUpdate = null, Action onFinished = null,
+            Action<int> onComplete, Action<float> onUpdate = null, Action onFinished = null,
             bool useRealTime = false, bool executeOnStart = false, Object autoDestroyOwner = null)
         {
             //Check
             if (loopCount <= 0)
             {
                 SafeCall(onUpdate, 0);
-                SafeCall(onComplete);
+                SafeCall(onComplete, 1);
                 SafeCall(onFinished);
                 return null;
             }
@@ -457,7 +457,6 @@ namespace GameUtil
         // whether the timer is in TimeManager
         private bool _isInManager;
 
-        protected Action _onComplete;
         protected Action<float> _onUpdate;
         protected float _startTime;
         private float _lastUpdateTime;
@@ -481,12 +480,11 @@ namespace GameUtil
             InitTimerManager();
         }
 
-        protected Timer(bool isPersistence, float duration, Action onComplete, Action<float> onUpdate,
+        protected Timer(bool isPersistence, float duration, Action<float> onUpdate,
             bool usesRealTime, Object autoDestroyOwner)
         {
             this.isPersistence = isPersistence;
             this.duration = duration;
-            this._onComplete = onComplete;
             this._onUpdate = onUpdate;
 
             this.usesRealTime = usesRealTime;

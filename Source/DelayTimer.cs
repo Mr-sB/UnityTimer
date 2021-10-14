@@ -4,10 +4,13 @@ namespace GameUtil
 {
     public class DelayTimer : Timer
     {
+        protected Action _onComplete;
+
         public DelayTimer(bool isPersistence, float duration, Action onComplete, Action<float> onUpdate,
             bool usesRealTime, UnityEngine.Object autoDestroyOwner)
-            : base(isPersistence, duration, onComplete, onUpdate, usesRealTime, autoDestroyOwner)
+            : base(isPersistence, duration, onUpdate, usesRealTime, autoDestroyOwner)
         {
+            _onComplete = onComplete;
         }
 
         protected override void Update()

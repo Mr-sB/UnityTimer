@@ -18,19 +18,19 @@ public static class TimerExtensions
         return Timer.DelayFrameAction(frame, onComplete, onUpdate, component);
     }
     
-    public static LoopTimer LoopAction(this Component component, float interval, Action onComplete, Action<float> onUpdate = null,
+    public static LoopTimer LoopAction(this Component component, float interval, Action<int> onComplete, Action<float> onUpdate = null,
         bool useRealTime = false, bool executeOnStart = false)
     {
         return Timer.LoopAction(interval, onComplete, onUpdate, useRealTime, executeOnStart, component);
     }
     
-    public static LoopUntilTimer LoopUntilAction(this Component component, float interval, Func<LoopUntilTimer, bool> loopUntil, Action onComplete, Action<float> onUpdate = null, Action onFinished = null,
+    public static LoopUntilTimer LoopUntilAction(this Component component, float interval, Func<LoopUntilTimer, bool> loopUntil, Action<int> onComplete, Action<float> onUpdate = null, Action onFinished = null,
         bool useRealTime = false, bool executeOnStart = false)
     {
         return Timer.LoopUntilAction(interval, loopUntil, onComplete, onUpdate, onFinished, useRealTime, executeOnStart, component);
     }
     
-    public static LoopCountTimer LoopCountAction(this Component component, float interval, int count, Action onComplete, Action<float> onUpdate = null, Action onFinished = null,
+    public static LoopCountTimer LoopCountAction(this Component component, float interval, int count, Action<int> onComplete, Action<float> onUpdate = null, Action onFinished = null,
         bool useRealTime = false, bool executeOnStart = false)
     {
         return Timer.LoopCountAction(interval, count, onComplete, onUpdate, onFinished, useRealTime, executeOnStart, component);
@@ -47,19 +47,19 @@ public static class TimerExtensions
         return Timer.PersistenceDelayFrameAction(frame, onComplete, onUpdate, component);
     }
     
-    public static LoopTimer PersistenceLoopAction(this Component component, float interval, Action onComplete, Action<float> onUpdate = null,
+    public static LoopTimer PersistenceLoopAction(this Component component, float interval, Action<int> onComplete, Action<float> onUpdate = null,
         bool useRealTime = false, bool executeOnStart = false)
     {
         return Timer.PersistenceLoopAction(interval, onComplete, onUpdate, useRealTime, executeOnStart, component);
     }
     
-    public static LoopUntilTimer PersistenceLoopUntilAction(this Component component, float interval, Func<LoopUntilTimer, bool> loopUntil, Action onComplete, Action<float> onUpdate = null, Action onFinished = null,
+    public static LoopUntilTimer PersistenceLoopUntilAction(this Component component, float interval, Func<LoopUntilTimer, bool> loopUntil, Action<int> onComplete, Action<float> onUpdate = null, Action onFinished = null,
         bool useRealTime = false, bool executeOnStart = false)
     {
         return Timer.PersistenceLoopUntilAction(interval, loopUntil, onComplete, onUpdate, onFinished, useRealTime, executeOnStart, component);
     }
     
-    public static LoopCountTimer PersistenceLoopCountAction(this Component component, float interval, int count, Action onComplete, Action<float> onUpdate = null, Action onFinished = null,
+    public static LoopCountTimer PersistenceLoopCountAction(this Component component, float interval, int count, Action<int> onComplete, Action<float> onUpdate = null, Action onFinished = null,
         bool useRealTime = false, bool executeOnStart = false)
     {
         return Timer.PersistenceLoopCountAction(interval, count, onComplete, onUpdate, onFinished, useRealTime, executeOnStart, component);
@@ -82,19 +82,19 @@ public static class TimerExtensions
         return Timer.DelayFrameAction(frame, onComplete, onUpdate, component);
     }
     
-    public static LoopTimer LoopAction(this GameObject component, float interval, Action onComplete, Action<float> onUpdate = null,
+    public static LoopTimer LoopAction(this GameObject component, float interval, Action<int> onComplete, Action<float> onUpdate = null,
         bool useRealTime = false, bool executeOnStart = false)
     {
         return Timer.LoopAction(interval, onComplete, onUpdate, useRealTime, executeOnStart, component);
     }
     
-    public static LoopUntilTimer LoopUntilAction(this GameObject component, float interval, Func<LoopUntilTimer, bool> loopUntil, Action onComplete, Action<float> onUpdate = null, Action onFinished = null,
+    public static LoopUntilTimer LoopUntilAction(this GameObject component, float interval, Func<LoopUntilTimer, bool> loopUntil, Action<int> onComplete, Action<float> onUpdate = null, Action onFinished = null,
         bool useRealTime = false, bool executeOnStart = false)
     {
         return Timer.LoopUntilAction(interval, loopUntil, onComplete, onUpdate, onFinished, useRealTime, executeOnStart, component);
     }
     
-    public static LoopCountTimer LoopCountAction(this GameObject component, float interval, int count, Action onComplete, Action<float> onUpdate = null, Action onFinished = null,
+    public static LoopCountTimer LoopCountAction(this GameObject component, float interval, int count, Action<int> onComplete, Action<float> onUpdate = null, Action onFinished = null,
         bool useRealTime = false, bool executeOnStart = false)
     {
         return Timer.LoopCountAction(interval, count, onComplete, onUpdate, onFinished, useRealTime, executeOnStart, component);
@@ -111,19 +111,19 @@ public static class TimerExtensions
         return Timer.PersistenceDelayFrameAction(frame, onComplete, onUpdate, component);
     }
     
-    public static LoopTimer PersistenceLoopAction(this GameObject component, float interval, Action onComplete, Action<float> onUpdate = null,
+    public static LoopTimer PersistenceLoopAction(this GameObject component, float interval, Action<int> onComplete, Action<float> onUpdate = null,
         bool useRealTime = false, bool executeOnStart = false)
     {
         return Timer.PersistenceLoopAction(interval, onComplete, onUpdate, useRealTime, executeOnStart, component);
     }
     
-    public static LoopUntilTimer PersistenceLoopUntilAction(this GameObject component, float interval, Func<LoopUntilTimer, bool> loopUntil, Action onComplete, Action<float> onUpdate = null, Action onFinished = null,
+    public static LoopUntilTimer PersistenceLoopUntilAction(this GameObject component, float interval, Func<LoopUntilTimer, bool> loopUntil, Action<int> onComplete, Action<float> onUpdate = null, Action onFinished = null,
         bool useRealTime = false, bool executeOnStart = false)
     {
         return Timer.PersistenceLoopUntilAction(interval, loopUntil, onComplete, onUpdate, onFinished, useRealTime, executeOnStart, component);
     }
     
-    public static LoopCountTimer PersistenceLoopCountAction(this GameObject component, float interval, int count, Action onComplete, Action<float> onUpdate = null, Action onFinished = null,
+    public static LoopCountTimer PersistenceLoopCountAction(this GameObject component, float interval, int count, Action<int> onComplete, Action<float> onUpdate = null, Action onFinished = null,
         bool useRealTime = false, bool executeOnStart = false)
     {
         return Timer.PersistenceLoopCountAction(interval, count, onComplete, onUpdate, onFinished, useRealTime, executeOnStart, component);

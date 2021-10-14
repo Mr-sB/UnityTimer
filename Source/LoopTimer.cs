@@ -4,21 +4,28 @@ namespace GameUtil
 {
     public class LoopTimer : Timer
     {
+        /// <summary>
+        /// Parameter is loopTime.
+        /// </summary>
+        protected Action<int> _onComplete;
         private bool _executeOnStart;
 
+        [Obsolete("Use loopTimes instead.")]
+        public int loopTime => loopTimes;
         /// <summary>
         /// How many times does the LoopTimer looped.
         /// </summary>
-        public int loopTime { protected set; get; }
+        public int loopTimes { private set; get; }
 
         protected virtual void OnComplete()
         {
         }
 
-        public LoopTimer(bool isPersistence, float interval, Action onComplete,
+        public LoopTimer(bool isPersistence, float interval, Action<int> onComplete,
             Action<float> onUpdate, bool usesRealTime, bool executeOnStart, UnityEngine.Object autoDestroyOwner)
-            : base(isPersistence, interval, onComplete, onUpdate, usesRealTime, autoDestroyOwner)
+            : base(isPersistence, interval, onUpdate, usesRealTime, autoDestroyOwner)
         {
+            _onComplete = onComplete;
             _executeOnStart = executeOnStart;
         }
 
@@ -31,7 +38,7 @@ namespace GameUtil
 
         protected override void OnRestart()
         {
-            loopTime = 0;
+            loopTimes = 0;
             if (_executeOnStart)
                 Complete();
         }
@@ -57,8 +64,8 @@ namespace GameUtil
 
         private void Complete()
         {
-            loopTime++;
-            SafeCall(_onComplete);
+            loopTimes++;
+            SafeCall(_onComplete, loopTimes);
             OnComplete();
         }
 
@@ -68,7 +75,7 @@ namespace GameUtil
             Restart();
         }
 
-        public void Restart(float newInterval, Action newOnComplete, Action<float> newOnUpdate, bool newUsesRealTime, bool newExecuteOnStart)
+        public void Restart(float newInterval, Action<int> newOnComplete, Action<float> newOnUpdate, bool newUsesRealTime, bool newExecuteOnStart)
         {
             duration = newInterval;
             _onComplete = newOnComplete;

@@ -16,21 +16,21 @@ public static DelayTimer DelayAction(float duration, Action onComplete, Action<f
 
 public static DelayFrameTimer DelayFrameAction(int frame, Action onComplete, Action<float> onUpdate = null, Object autoDestroyOwner = null);
 
-public static LoopTimer LoopAction(float interval, Action onComplete, Action<float> onUpdate = null, bool useRealTime = false, bool executeOnStart = false, Object autoDestroyOwner = null);
+public static LoopTimer LoopAction(float interval, Action<int> onComplete, Action<float> onUpdate = null, bool useRealTime = false, bool executeOnStart = false, Object autoDestroyOwner = null);
         
-public static LoopUntilTimer LoopUntilAction(float interval, Func<LoopUntilTimer, bool> loopUntil, Action onComplete, Action<float> onUpdate = null, Action onFinished = null, bool useRealTime = false, bool executeOnStart = false, Object autoDestroyOwner = null);
+public static LoopUntilTimer LoopUntilAction(float interval, Func<LoopUntilTimer, bool> loopUntil, Action<int> onComplete, Action<float> onUpdate = null, Action onFinished = null, bool useRealTime = false, bool executeOnStart = false, Object autoDestroyOwner = null);
 
-public static LoopCountTimer LoopCountAction(float interval, int loopCount, Action onComplete, Action<float> onUpdate = null, Action onFinished = null, bool useRealTime = false, bool executeOnStart = false, Object autoDestroyOwner = null);
+public static LoopCountTimer LoopCountAction(float interval, int loopCount, Action<int> onComplete, Action<float> onUpdate = null, Action onFinished = null, bool useRealTime = false, bool executeOnStart = false, Object autoDestroyOwner = null);
 
 public static DelayTimer PersistenceDelayAction(float duration, Action onComplete, Action<float> onUpdate = null, bool useRealTime = false, Object autoDestroyOwner = null);
 
 public static DelayFrameTimer PersistenceDelayFrameAction(int frame, Action onComplete, Action<float> onUpdate = null, Object autoDestroyOwner = null);
 
-public static LoopTimer PersistenceLoopAction(float interval, Action onComplete, Action<float> onUpdate = null, bool useRealTime = false, bool executeOnStart = false, Object autoDestroyOwner = null);
+public static LoopTimer PersistenceLoopAction(float interval, Action<int> onComplete, Action<float> onUpdate = null, bool useRealTime = false, bool executeOnStart = false, Object autoDestroyOwner = null);
 
-public static LoopUntilTimer PersistenceLoopUntilAction(float interval, Func<LoopUntilTimer, bool> loopUntil, Action onComplete, Action<float> onUpdate = null, Action onFinished = null, bool useRealTime = false, bool executeOnStart = false, Object autoDestroyOwner = null);
+public static LoopUntilTimer PersistenceLoopUntilAction(float interval, Func<LoopUntilTimer, bool> loopUntil, Action<int> onComplete, Action<float> onUpdate = null, Action onFinished = null, bool useRealTime = false, bool executeOnStart = false, Object autoDestroyOwner = null);
 
-public static LoopCountTimer PersistenceLoopCountAction(float interval, int loopCount, Action onComplete, Action<float> onUpdate = null, Action onFinished = null, bool useRealTime = false, bool executeOnStart = false, Object autoDestroyOwner = null);
+public static LoopCountTimer PersistenceLoopCountAction(float interval, int loopCount, Action<int> onComplete, Action<float> onUpdate = null, Action onFinished = null, bool useRealTime = false, bool executeOnStart = false, Object autoDestroyOwner = null);
 ```
 ## Motivation
 
@@ -51,7 +51,7 @@ This library alleviates both of these concerns, making it easy to add an easy-to
 ```c#
 private void Start()
 {
-   Timer.LoopAction(5, () => { Debug.LogError("Timer Called"); });
+   Timer.LoopAction(5, loopTime => { Debug.LogError("Timer Called: " + loopTime); });
 }
 ```
 
@@ -59,7 +59,7 @@ private void Start()
 ```c#
 private void Start()
 {
-   Timer.LoopAction(5, () => { Debug.LogError("Timer Called"); }, executeOnStart: true);
+   Timer.LoopAction(5, loopTime => { Debug.LogError("Timer Called: " + loopTime); }, executeOnStart: true);
 }
 ```
 
@@ -84,7 +84,7 @@ private void Start()
 Timer timer;
 
 void Start() {
-   timer = Timer.LoopAction(5, () => { Debug.LogError("Timer Called"); });
+   timer = Timer.LoopAction(5, _ => { Debug.LogError("Timer Called"); });
 }
 
 void Update() {
@@ -149,7 +149,7 @@ Timer timer;
 
 void Start() {
    //The timer will not cancel when Timer.XXXAllRegisteredTimers();
-   timer = Timer.PersistenceLoopAction(5, () => { Debug.LogError("Timer Called"); });
+   timer = Timer.PersistenceLoopAction(5, _ => { Debug.LogError("Timer Called"); });
 }
 
 void Update() {

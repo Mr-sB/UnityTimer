@@ -7,7 +7,7 @@ namespace GameUtil
         protected Func<LoopUntilTimer, bool> _loopUntilFunc;
         private Action _onFinished;
 
-        public LoopUntilTimer(bool isPersistence, float interval, Func<LoopUntilTimer, bool> loopUntil, Action onComplete,
+        public LoopUntilTimer(bool isPersistence, float interval, Func<LoopUntilTimer, bool> loopUntil, Action<int> onComplete,
             Action<float> onUpdate, Action onFinished, bool usesRealTime, bool executeOnStart, UnityEngine.Object autoDestroyOwner)
             : base(isPersistence, interval, onComplete, onUpdate, usesRealTime, executeOnStart, autoDestroyOwner)
         {
@@ -29,7 +29,7 @@ namespace GameUtil
             Restart(newInterval);
         }
         
-        public virtual void Restart(float newInterval, Func<LoopUntilTimer, bool> newLoopUntil, Action newOnComplete, Action<float> newOnUpdate, Action newOnFinished, bool newUsesRealTime, bool newExecuteOnStart)
+        public virtual void Restart(float newInterval, Func<LoopUntilTimer, bool> newLoopUntil, Action<int> newOnComplete, Action<float> newOnUpdate, Action newOnFinished, bool newUsesRealTime, bool newExecuteOnStart)
         {
             _loopUntilFunc = newLoopUntil;
             _onFinished = newOnFinished;
