@@ -12,6 +12,13 @@ namespace GameUtil
         {
             _onComplete = onComplete;
         }
+        
+        public DelayTimer(bool isPersistence, float duration, Action onComplete, Action<float> onUpdate,
+            UpdateMode updateMode, UnityEngine.Object autoDestroyOwner)
+            : base(isPersistence, duration, onUpdate, updateMode, autoDestroyOwner)
+        {
+            _onComplete = onComplete;
+        }
 
         protected override void Update()
         {
@@ -33,26 +40,32 @@ namespace GameUtil
             Restart();
         }
 
-        public void Restart(bool newUseRealTime)
-        {
-            usesRealTime = newUseRealTime;
-            Restart();
-        }
-
         public void Restart(float newDuration, bool newUseRealTime)
         {
             duration = newDuration;
-            usesRealTime = newUseRealTime;
-            Restart();
+            Restart(newUseRealTime);
+        }
+        
+        public void Restart(float newDuration, UpdateMode newUpdateMode)
+        {
+            duration = newDuration;
+            Restart(newUpdateMode);
         }
 
         public void Restart(float newDuration, Action newOnComplete, Action<float> newOnUpdate, bool newUseRealTime)
         {
             duration = newDuration;
-            usesRealTime = newUseRealTime;
             _onComplete = newOnComplete;
             _onUpdate = newOnUpdate;
-            Restart();
+            Restart(newUseRealTime);
+        }
+        
+        public void Restart(float newDuration, Action newOnComplete, Action<float> newOnUpdate, UpdateMode newUpdateMode)
+        {
+            duration = newDuration;
+            _onComplete = newOnComplete;
+            _onUpdate = newOnUpdate;
+            Restart(newUpdateMode);
         }
     }
 }

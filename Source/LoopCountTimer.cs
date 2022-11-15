@@ -13,6 +13,14 @@ namespace GameUtil
             this.loopCount = loopCount;
             _loopUntilFunc = LoopCountUntil;
         }
+        
+        public LoopCountTimer(bool isPersistence, float interval, int loopCount, Action<int> onComplete,
+            Action<float> onUpdate, Action onFinished, UpdateMode updateMode, bool executeOnStart, UnityEngine.Object autoDestroyOwner)
+            : base(isPersistence, interval, null, onComplete, onUpdate, onFinished, updateMode, executeOnStart, autoDestroyOwner)
+        {
+            this.loopCount = loopCount;
+            _loopUntilFunc = LoopCountUntil;
+        }
 
         private bool LoopCountUntil(LoopUntilTimer timer)
         {
@@ -37,10 +45,22 @@ namespace GameUtil
             base.Restart(newInterval, LoopCountUntil, newOnComplete, newOnUpdate, newOnFinished, newUsesRealTime, newExecuteOnStart);
         }
         
+        //Avoid _loopUntilFunc reassignment
+        public sealed override void Restart(float newInterval, Func<LoopUntilTimer, bool> newLoopUntil, Action<int> newOnComplete, Action<float> newOnUpdate, Action newOnFinished, UpdateMode newUpdateMode, bool newExecuteOnStart)
+        {
+            base.Restart(newInterval, LoopCountUntil, newOnComplete, newOnUpdate, newOnFinished, newUpdateMode, newExecuteOnStart);
+        }
+        
         public void Restart(float newInterval, int newLoopCount, Action<int> newOnComplete, Action<float> newOnUpdate, Action newOnFinished, bool newUsesRealTime, bool newExecuteOnStart)
         {
             loopCount = newLoopCount;
             Restart(newInterval, LoopCountUntil, newOnComplete, newOnUpdate, newOnFinished, newUsesRealTime, newExecuteOnStart);
+        }
+        
+        public void Restart(float newInterval, int newLoopCount, Action<int> newOnComplete, Action<float> newOnUpdate, Action newOnFinished, UpdateMode newUpdateMode, bool newExecuteOnStart)
+        {
+            loopCount = newLoopCount;
+            Restart(newInterval, LoopCountUntil, newOnComplete, newOnUpdate, newOnFinished, newUpdateMode, newExecuteOnStart);
         }
     }
 }

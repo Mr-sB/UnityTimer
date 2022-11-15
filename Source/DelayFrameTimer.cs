@@ -14,7 +14,7 @@ namespace GameUtil
 
         public DelayFrameTimer(bool isPersistence, int frame, Action onComplete, Action<float> onUpdate,
             UnityEngine.Object autoDestroyOwner)
-            : base(isPersistence, frame, onUpdate, true, autoDestroyOwner)
+            : base(isPersistence, frame, onUpdate, UpdateMode.GameTime, autoDestroyOwner)
         {
             _onComplete = onComplete;
         }

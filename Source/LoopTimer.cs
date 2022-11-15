@@ -28,6 +28,14 @@ namespace GameUtil
             _onComplete = onComplete;
             this.executeOnStart = executeOnStart;
         }
+        
+        public LoopTimer(bool isPersistence, float interval, Action<int> onComplete,
+            Action<float> onUpdate, UpdateMode updateMode, bool executeOnStart, UnityEngine.Object autoDestroyOwner)
+            : base(isPersistence, interval, onUpdate, updateMode, autoDestroyOwner)
+        {
+            _onComplete = onComplete;
+            this.executeOnStart = executeOnStart;
+        }
 
         protected override void OnInit()
         {
@@ -80,9 +88,17 @@ namespace GameUtil
             duration = newInterval;
             _onComplete = newOnComplete;
             _onUpdate = newOnUpdate;
-            usesRealTime = newUsesRealTime;
             executeOnStart = newExecuteOnStart;
-            Restart();
+            Restart(newUsesRealTime);
+        }
+        
+        public void Restart(float newInterval, Action<int> newOnComplete, Action<float> newOnUpdate, UpdateMode newUpdateMode, bool newExecuteOnStart)
+        {
+            duration = newInterval;
+            _onComplete = newOnComplete;
+            _onUpdate = newOnUpdate;
+            executeOnStart = newExecuteOnStart;
+            Restart(newUpdateMode);
         }
     }
 }
