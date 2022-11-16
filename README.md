@@ -71,11 +71,23 @@ private void Start()
 }
 ```
 
-* Measure time by [realtimeSinceStartup](http://docs.unity3d.com/ScriptReference/Time-realtimeSinceStartup.html) instead of scaled game time by setting `useRealTime` to true.
+* Measure time by [realtimeSinceStartup](http://docs.unity3d.com/ScriptReference/Time-realtimeSinceStartup.html)
+  instead of scaled game time by setting [Obsolete("Use updateMode to instead.")]`useRealTime` to true.
+  Default is false.
 ```c#
 private void Start()
 {
    Timer.DelayAction(5, () => { Debug.LogError("Timer Called"); }, useRealTime: true);
+}
+```
+
+* Measure time by [time](http://docs.unity3d.com/ScriptReference/Time-time.html) or [unscaledTime](http://docs.unity3d.com/ScriptReference/Time-unscaledTime.html) or [realtimeSinceStartup](http://docs.unity3d.com/ScriptReference/Time-realtimeSinceStartup.html)
+  by setting `updateMode` to `Timer.UpdateMode.GameTime` or `Timer.UpdateMode.UnscaledGameTime` or `Timer.UpdateMode.RealTime`.
+  Default is `Timer.UpdateMode.GameTime`.
+```c#
+private void Start()
+{
+   Timer.DelayAction(5, () => { Debug.LogError("Timer Called"); }, null, Timer.UpdateMode.UnscaledGameTime);
 }
 ```
 
