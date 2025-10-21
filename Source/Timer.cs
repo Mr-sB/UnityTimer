@@ -892,7 +892,9 @@ namespace GameUtil
                         var toRemoveNode = node;
                         node = node.Next;
                         //remove
-                        timers.Remove(toRemoveNode);
+                        // Maybe timers are cleared, their owner list will be clear. In this case, do not Remove again.
+                        if (toRemoveNode.List != null)
+                            timers.Remove(toRemoveNode);
                     }
                     else
                         node = node.Next;
